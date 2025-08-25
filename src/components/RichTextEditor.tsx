@@ -63,7 +63,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         modules={modules}
         formats={formats}
         placeholder={placeholder}
-        preserveWhitespace={true}
         style={{
           height: height,
           marginBottom: '42px' // Account for toolbar height
