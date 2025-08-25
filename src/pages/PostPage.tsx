@@ -1,78 +1,114 @@
-import { useParams, Link } from "react-router-dom";
-import posts from "../data/posts";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, Share2, Twitter, Facebook, Linkedin } from "lucide-react";
 
 export default function PostPage() {
-  const { slug } = useParams();
-  const post = posts.find((p) => p.slug === slug);
-
-  if (!post) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <h1 className="text-2xl font-semibold text-gray-700">
-          Post not found.
-        </h1>
-      </div>
-    );
-  }
-
-  const relatedPosts = posts
-    .filter((p) => p.published && p.id !== post.id && p.category_id === post.category_id)
-    .slice(0, 3);
-
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-5 lg:px-20">
-      <div className="max-w-4xl mx-auto">
-        {/* Post Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
+    <div className="min-h-screen bg-gray-50 flex justify-center px-4">
+      <article className="w-full max-w-4xl py-10">
+        {/* Breadcrumb / Back */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-4xl font-bold text-gray-900 mb-6 leading-snug"
+          className="mb-6 flex items-center gap-2 text-gray-500 text-sm"
         >
-          {post.title}
-        </motion.h1>
+          <ArrowLeft className="h-4 w-4" />
+          <a href="/" className="hover:text-gray-900 transition-colors">
+            Back to Home
+          </a>
+        </motion.div>
 
-        {/* Post Meta */}
-        <p className="text-sm text-gray-500 mb-8">
-          {post.date} ·{" "}
-          <Link to={`/category/${post.category_id}`} className="text-blue-500 hover:underline">
-            {post.category}
-          </Link>
-        </p>
-
-        {/* Post Content */}
-        <motion.div
+        {/* Title & Meta */}
+        <motion.header
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="prose lg:prose-lg max-w-none text-gray-800 leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <h1 className="text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-4">
+            The Future of Healthcare: How Technology is Transforming Medicine
+          </h1>
+          <p className="text-gray-500 text-lg">
+            By <span className="font-medium text-gray-700">Dr. Jane Smith</span> · August 22, 2025
+          </p>
+        </motion.header>
 
-        {/* Related Posts Section */}
-        {relatedPosts.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-6">Related Posts</h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedPosts.map((related) => (
-                <motion.div
-                  key={related.id}
-                  whileHover={{ scale: 1.03 }}
-                  className="bg-white rounded-2xl shadow hover:shadow-lg p-5 transition"
-                >
-                  <Link to={`/post/${related.slug}`} className="block">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      {related.title}
-                    </h3>
-                    <p className="text-sm text-gray-500">{related.date}</p>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+        {/* Featured Image */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7 }}
+          className="overflow-hidden rounded-2xl shadow-sm mb-10"
+        >
+          <img
+            src="https://source.unsplash.com/1200x600/?healthcare,technology"
+            alt="Healthcare Technology"
+            className="w-full object-cover"
+          />
+        </motion.div>
+
+        {/* Content */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="prose prose-lg prose-gray max-w-none mb-12"
+        >
+          <p>
+            Technology is revolutionizing healthcare, from AI-driven diagnostics to robotic-assisted
+            surgeries. These innovations promise better outcomes, improved accessibility, and
+            personalized patient care.
+          </p>
+
+          <h2>The Role of Artificial Intelligence</h2>
+          <p>
+            AI has the potential to analyze complex medical data faster and more accurately than
+            humans, supporting doctors in making critical decisions.
+          </p>
+
+          <h2>Telemedicine & Remote Monitoring</h2>
+          <p>
+            Virtual consultations and remote patient monitoring have increased access to healthcare,
+            especially in underserved areas.
+          </p>
+
+          <blockquote>
+            “The integration of technology into medicine is not just a trend—it’s the future of
+            saving lives.”
+          </blockquote>
+
+          <p>
+            As technology continues to advance, ethical considerations, privacy concerns, and
+            equitable access will remain vital topics of discussion.
+          </p>
+        </motion.section>
+
+        {/* Share Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center justify-between"
+        >
+          <p className="text-gray-700 font-medium">Share this article:</p>
+          <div className="flex gap-3">
+            <Button variant="outline" size="icon" className="hover:bg-gray-100">
+              <Twitter className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" className="hover:bg-gray-100">
+              <Facebook className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" className="hover:bg-gray-100">
+              <Linkedin className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" className="hover:bg-gray-100">
+              <Share2 className="h-4 w-4" />
+            </Button>
           </div>
-        )}
-      </div>
+        </motion.div>
+      </article>
     </div>
   );
 }
