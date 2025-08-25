@@ -5,6 +5,15 @@ import Footer from '../components/Footer';
 import PostCard from '../components/PostCard';
 import { useBlog } from '../context/BlogContext';
 import { Calendar, User, Tag, ArrowLeft, Share2, Facebook, Twitter } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+// Add Poppins font import
+const poppinsLink = document.createElement('link');
+poppinsLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap';
+poppinsLink.rel = 'stylesheet';
+if (!document.querySelector(`link[href="${poppinsLink.href}"]`)) {
+  document.head.appendChild(poppinsLink);
+}
 
 const PostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -18,12 +27,15 @@ const PostPage: React.FC = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100" style={{ fontFamily: 'Poppins, sans-serif' }}>
         <Header />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Article Not Found</h1>
-          <p className="text-gray-600 mb-8">The article you're looking for doesn't exist or has been removed.</p>
-          <Link to="/blog" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-24 text-center">
+          <h1 className="text-6xl md:text-7xl font-black text-slate-900 mb-8 tracking-tight">Article Not Found</h1>
+          <p className="text-2xl text-slate-600 mb-12 leading-relaxed font-medium max-w-2xl mx-auto">The article you're looking for doesn't exist or has been removed.</p>
+          <Link 
+            to="/blog" 
+            className="inline-flex items-center bg-gradient-to-r from-slate-900 to-slate-800 text-white px-12 py-5 rounded-2xl hover:from-slate-800 hover:to-slate-700 transition-all duration-300 font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1"
+          >
             Back to Articles
           </Link>
         </div>
@@ -32,126 +44,139 @@ const PostPage: React.FC = () => {
     );
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const shareUrl = window.location.href;
   const shareTitle = post.title;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100" style={{ fontFamily: 'Poppins, sans-serif' }}>
       <Header />
-      
+
       {/* Breadcrumb */}
-      <section className="bg-white py-4 border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center space-x-2 text-sm">
-            <Link to="/" className="text-blue-600 hover:text-blue-800">Home</Link>
-            <span className="text-gray-400">/</span>
-            <Link to="/blog" className="text-blue-600 hover:text-blue-800">Blog</Link>
-            <span className="text-gray-400">/</span>
-            <span className="text-gray-600">{post.title}</span>
+      <section className="bg-white py-8 border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+          <nav className="flex items-center space-x-4 text-lg">
+            <Link to="/" className="text-slate-600 hover:text-slate-900 font-semibold transition-colors duration-200">Home</Link>
+            <span className="text-slate-400 font-medium">/</span>
+            <Link to="/blog" className="text-slate-600 hover:text-slate-900 font-semibold transition-colors duration-200">Blog</Link>
+            <span className="text-slate-400 font-medium">/</span>
+            <span className="text-slate-800 font-bold truncate">{post.title}</span>
           </nav>
         </div>
       </section>
 
-      {/* Article Header */}
-      <article className="py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Article */}
+      <article className="py-20">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
           {/* Back Button */}
-          <Link
-            to="/blog"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8 transition-colors"
+          <Link 
+            to="/blog" 
+            className="inline-flex items-center text-slate-600 hover:text-slate-900 mb-16 transition-all duration-300 font-semibold text-xl group"
           >
-            <ArrowLeft size={16} className="mr-2" />
+            <ArrowLeft size={24} className="mr-4 group-hover:-translate-x-2 transition-transform duration-300" />
             Back to Articles
           </Link>
 
-          {/* Article Meta */}
-          <div className="mb-8">
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
+          {/* Meta Information */}
+          <div className="mb-16">
+            <div className="flex flex-wrap items-center gap-8 text-lg text-slate-600 mb-12">
               {post.category && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  <Tag size={12} className="mr-1" />
+                <span className="inline-flex items-center px-6 py-3 rounded-full text-base font-bold bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-2 border-slate-300 shadow-lg">
+                  <Tag size={18} className="mr-3" />
                   {post.category.name}
                 </span>
               )}
-              <span className="flex items-center">
-                <Calendar size={14} className="mr-1" />
+              <span className="flex items-center font-semibold text-xl">
+                <Calendar size={22} className="mr-4 text-slate-400" />
                 {formatDate(post.created_at)}
               </span>
-              <span className="flex items-center">
-                <User size={14} className="mr-1" />
+              <span className="flex items-center font-semibold text-xl">
+                <User size={22} className="mr-4 text-slate-400" />
                 Admin
               </span>
             </div>
 
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6">
+            <motion.h1
+              className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-slate-900 leading-[0.95] mb-12 tracking-tight"
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
               {post.title}
-            </h1>
+            </motion.h1>
 
-            <p className="text-xl text-gray-600 leading-relaxed">{post.excerpt}</p>
+            {post.excerpt && (
+              <motion.div
+                className="text-2xl md:text-3xl text-slate-600 leading-relaxed font-medium max-w-5xl"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1 }}
+                dangerouslySetInnerHTML={{ __html: post.excerpt }}
+              />
+            )}
           </div>
 
           {/* Featured Image */}
           {post.featured_image && (
-            <div className="mb-8">
-              <img
-                src={post.featured_image}
-                alt={post.title}
-                className="w-full h-64 md:h-96 object-cover rounded-xl shadow-lg"
+            <motion.div 
+              className="mb-20" 
+              initial={{ opacity: 0, y: 30 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 1 }}
+            >
+              <img 
+                src={post.featured_image} 
+                alt={post.title} 
+                className="w-full h-80 md:h-[36rem] lg:h-[42rem] object-cover rounded-3xl shadow-2xl border border-slate-200" 
               />
-            </div>
+            </motion.div>
           )}
 
-          {/* Share Buttons */}
-          <div className="flex items-center space-x-4 mb-8 pb-8 border-b border-gray-200">
-            <span className="text-gray-600 font-medium">Share this article:</span>
-            <div className="flex space-x-3">
-              <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
-                target="_blank"
+          {/* Share Section */}
+          <div className="flex flex-col lg:flex-row lg:items-center gap-8 mb-20 pb-16 border-b-2 border-slate-200">
+            <span className="text-slate-700 font-bold text-2xl">Share this article:</span>
+            <div className="flex space-x-6">
+              <a 
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} 
+                target="_blank" 
                 rel="noopener noreferrer"
-                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="p-5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-2"
               >
-                <Facebook size={16} />
+                <Facebook size={24} />
               </a>
-              <a
-                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`}
-                target="_blank"
+              <a 
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`} 
+                target="_blank" 
                 rel="noopener noreferrer"
-                className="p-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500 transition-colors"
+                className="p-5 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-2xl hover:from-sky-600 hover:to-sky-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-2"
               >
-                <Twitter size={16} />
+                <Twitter size={24} />
               </a>
-              <button
+              <button 
                 onClick={() => navigator.share?.({ title: shareTitle, url: shareUrl })}
-                className="p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className="p-5 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-2xl hover:from-slate-800 hover:to-slate-900 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-2"
               >
-                <Share2 size={16} />
+                <Share2 size={24} />
               </button>
             </div>
           </div>
 
           {/* Article Content */}
-          <div className="prose prose-lg max-w-none">
-            {post.content.split('\n').map((paragraph, index) => (
-              <p key={index} className="mb-6 text-gray-800 leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+          <motion.div
+            className="prose prose-2xl prose-slate max-w-none prose-headings:font-black prose-headings:text-slate-900 prose-headings:tracking-tight prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-p:text-slate-700 prose-p:leading-relaxed prose-p:text-xl prose-p:font-medium prose-a:text-slate-900 prose-a:font-bold prose-a:underline prose-a:decoration-2 prose-a:underline-offset-4 prose-strong:text-slate-900 prose-strong:font-bold prose-blockquote:border-l-4 prose-blockquote:border-slate-400 prose-blockquote:pl-8 prose-blockquote:text-slate-600 prose-blockquote:italic prose-blockquote:text-2xl prose-blockquote:font-medium prose-code:text-slate-800 prose-code:bg-slate-200 prose-code:px-3 prose-code:py-2 prose-code:rounded-lg prose-code:font-semibold prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:rounded-2xl prose-li:text-slate-700 prose-li:text-xl prose-li:font-medium prose-img:rounded-2xl prose-img:shadow-xl prose-ul:space-y-2 prose-ol:space-y-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.2 }}
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
 
-          {/* Article Footer */}
-          <div className="mt-12 pt-8 border-t border-gray-200">
-            <div className="flex flex-wrap gap-2">
+          {/* Tags Section */}
+          <div className="mt-20 pt-16 border-t-2 border-slate-200">
+            <div className="flex flex-wrap gap-4">
               {post.category && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
+                <span className="inline-flex items-center px-6 py-3 rounded-full text-lg font-bold bg-gradient-to-r from-slate-100 to-slate-200 text-slate-800 border-2 border-slate-300 hover:from-slate-200 hover:to-slate-300 transition-all duration-300 shadow-lg">
                   #{post.category.slug}
                 </span>
               )}
@@ -160,18 +185,31 @@ const PostPage: React.FC = () => {
         </div>
       </article>
 
-      {/* Related Posts */}
+      {/* Related Posts Section */}
       {relatedPosts.length > 0 && (
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Related Articles</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {relatedPosts.map((relatedPost) => (
-                <PostCard key={relatedPost.id} post={relatedPost} />
+        <motion.section
+          className="py-24 bg-white border-t-2 border-slate-200"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.4 }}
+        >
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+            <h2 className="text-5xl md:text-6xl font-black text-slate-900 mb-16 tracking-tight">Related Articles</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {relatedPosts.map((relatedPost, index) => (
+                <motion.div 
+                  key={relatedPost.id} 
+                  initial={{ opacity: 0, y: 40 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ delay: index * 0.3, duration: 0.8 }}
+                  className="transform hover:-translate-y-2 transition-all duration-300"
+                >
+                  <PostCard post={relatedPost} />
+                </motion.div>
               ))}
             </div>
           </div>
-        </section>
+        </motion.section>
       )}
 
       <Footer />
