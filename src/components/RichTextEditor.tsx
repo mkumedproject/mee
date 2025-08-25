@@ -1,12 +1,14 @@
 import React, { useMemo } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+
 interface RichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   height?: string;
 }
+
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
   value,
   onChange,
@@ -33,8 +35,16 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     },
     clipboard: {
       matchVisual: false,
+      matchers: [
+        ['PRE', (node, delta) => delta],  // Preserve preformatted text
+        ['P', (node, delta) => delta],    // Preserve paragraphs
+        ['STRONG', (node, delta) => delta], // Preserve bold (**)
+        ['EM', (node, delta) => delta],   // Preserve italic (*)
+        ['LI', (node, delta) => delta]    // Preserve list items
+      ]
     }
   }), []);
+
   const formats = [
     'header', 'font', 'size',
     'bold', 'italic', 'underline', 'strike',
@@ -45,6 +55,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     'blockquote', 'code-block',
     'link', 'image', 'video'
   ];
+
   return (
     <div className="rich-text-editor">
       <ReactQuill
@@ -56,10 +67,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         placeholder={placeholder}
         style={{
           height: height,
-          marginBottom: '42px' // Account for toolbar height
+          marginBottom: '42px'
         }}
       />
     </div>
   );
 };
+
 export default RichTextEditor;
