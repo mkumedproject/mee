@@ -36,11 +36,23 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     clipboard: {
       matchVisual: false,
       matchers: [
-        ['PRE', (node, delta) => delta],  // Preserve preformatted text
-        ['P', (node, delta) => delta],    // Preserve paragraphs
-        ['STRONG', (node, delta) => delta], // Preserve bold (**)
-        ['EM', (node, delta) => delta],   // Preserve italic (*)
-        ['LI', (node, delta) => delta]    // Preserve list items
+        ['PRE', (node, delta) => delta],        // Preserve preformatted blocks
+        ['CODE', (node, delta) => delta],       // Preserve inline code/excerpts
+        ['P', (node, delta) => delta],          // Preserve paragraphs
+        ['STRONG', (node, delta) => delta],     // Preserve <strong> (bold)
+        ['B', (node, delta) => delta],          // Preserve <b>
+        ['EM', (node, delta) => delta],         // Preserve <em> (italic)
+        ['I', (node, delta) => delta],          // Preserve <i>
+        ['BLOCKQUOTE', (node, delta) => delta], // Preserve blockquotes
+        ['UL', (node, delta) => delta],         // Preserve unordered lists
+        ['OL', (node, delta) => delta],         // Preserve ordered lists
+        ['LI', (node, delta) => delta],         // Preserve list items
+        ['H1', (node, delta) => delta],         // Preserve headings
+        ['H2', (node, delta) => delta],
+        ['H3', (node, delta) => delta],
+        ['H4', (node, delta) => delta],
+        ['H5', (node, delta) => delta],
+        ['H6', (node, delta) => delta]
       ]
     }
   }), []);
