@@ -36,23 +36,37 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     clipboard: {
       matchVisual: false,
       matchers: [
-        ['PRE', (node, delta) => delta],        // Preserve preformatted blocks
-        ['CODE', (node, delta) => delta],       // Preserve inline code/excerpts
-        ['P', (node, delta) => delta],          // Preserve paragraphs
-        ['STRONG', (node, delta) => delta],     // Preserve <strong> (bold)
-        ['B', (node, delta) => delta],          // Preserve <b>
-        ['EM', (node, delta) => delta],         // Preserve <em> (italic)
-        ['I', (node, delta) => delta],          // Preserve <i>
-        ['BLOCKQUOTE', (node, delta) => delta], // Preserve blockquotes
-        ['UL', (node, delta) => delta],         // Preserve unordered lists
-        ['OL', (node, delta) => delta],         // Preserve ordered lists
-        ['LI', (node, delta) => delta],         // Preserve list items
-        ['H1', (node, delta) => delta],         // Preserve headings
+        // Preserve code/excerpts/preformatted text
+        ['PRE', (node, delta) => delta],
+        ['CODE', (node, delta) => delta],
+
+        // Preserve paragraphs and emphasis styles
+        ['P', (node, delta) => delta],
+        ['STRONG', (node, delta) => delta],
+        ['B', (node, delta) => delta],
+        ['EM', (node, delta) => delta],
+        ['I', (node, delta) => delta],
+
+        // Preserve block-level structures
+        ['BLOCKQUOTE', (node, delta) => delta],
+        ['UL', (node, delta) => delta],
+        ['OL', (node, delta) => delta],
+        ['LI', (node, delta) => delta],
+
+        // Preserve headings
+        ['H1', (node, delta) => delta],
         ['H2', (node, delta) => delta],
         ['H3', (node, delta) => delta],
         ['H4', (node, delta) => delta],
         ['H5', (node, delta) => delta],
-        ['H6', (node, delta) => delta]
+        ['H6', (node, delta) => delta],
+
+        // Preserve <SECTION> or <DIV> excerpts
+        ['SECTION', (node, delta) => delta],
+        ['DIV', (node, delta) => delta],
+
+        // Preserve <SPAN> styles (used for inline highlights or excerpts)
+        ['SPAN', (node, delta) => delta]
       ]
     }
   }), []);
