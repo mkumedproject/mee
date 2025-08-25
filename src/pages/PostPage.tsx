@@ -1,114 +1,181 @@
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Share2, Twitter, Facebook, Linkedin } from "lucide-react";
+import React from 'react';
+import { useParams, Link } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import PostCard from '../components/PostCard';
+import { useBlog } from '../context/BlogContext';
+import { Calendar, User, Tag, ArrowLeft, Share2, Facebook, Twitter } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-export default function PostPage() {
+const PostPage: React.FC = () => {
+  const { slug } = useParams<{ slug: string }>();
+  const { state } = useBlog();
+  const { posts } = state;
+
+  const post = posts.find(p => p.slug === slug);
+  const relatedPosts = posts
+    .filter(p => p.published && p.id !== post?.id && p.category_id === post?.category_id)
+    .slice(0, 3);
+
+  if (!post) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Article Not Found</h1>
+          <p className="text-gray-600 mb-8">The article you're looking for doesn't exist or has been removed.</p>
+          <Link to="/blog" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+            Back to Articles
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const shareUrl = window.location.href;
+  const shareTitle = post.title;
+
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center px-4">
-      <article className="w-full max-w-4xl py-10">
-        {/* Breadcrumb / Back */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-6 flex items-center gap-2 text-gray-500 text-sm"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <a href="/" className="hover:text-gray-900 transition-colors">
-            Back to Home
-          </a>
-        </motion.div>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
 
-        {/* Title & Meta */}
-        <motion.header
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
-          <h1 className="text-4xl font-bold text-gray-900 leading-tight tracking-tight mb-4">
-            The Future of Healthcare: How Technology is Transforming Medicine
-          </h1>
-          <p className="text-gray-500 text-lg">
-            By <span className="font-medium text-gray-700">Dr. Jane Smith</span> · August 22, 2025
-          </p>
-        </motion.header>
+      {/* Breadcrumb */}
+      <section className="bg-white py-4 border-b">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex items-center space-x-2 text-sm">
+            <Link to="/" className="text-blue-600 hover:text-blue-800">Home</Link>
+            <span className="text-gray-400">/</span>
+            <Link to="/blog" className="text-blue-600 hover:text-blue-800">Blog</Link>
+            <span className="text-gray-400">/</span>
+            <span className="text-gray-600">{post.title}</span>
+          </nav>
+        </div>
+      </section>
 
-        {/* Featured Image */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7 }}
-          className="overflow-hidden rounded-2xl shadow-sm mb-10"
-        >
-          <img
-            src="https://source.unsplash.com/1200x600/?healthcare,technology"
-            alt="Healthcare Technology"
-            className="w-full object-cover"
-          />
-        </motion.div>
+      {/* Article */}
+      <article className="py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Back Button */}
+          <Link to="/blog" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8 transition-colors">
+            <ArrowLeft size={16} className="mr-2" />
+            Back to Articles
+          </Link>
 
-        {/* Content */}
-        <motion.section
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="prose prose-lg prose-gray max-w-none mb-12"
-        >
-          <p>
-            Technology is revolutionizing healthcare, from AI-driven diagnostics to robotic-assisted
-            surgeries. These innovations promise better outcomes, improved accessibility, and
-            personalized patient care.
-          </p>
+          {/* Meta */}
+          <div className="mb-8">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
+              {post.category && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <Tag size={12} className="mr-1" />
+                  {post.category.name}
+                </span>
+              )}
+              <span className="flex items-center">
+                <Calendar size={14} className="mr-1" />
+                {formatDate(post.created_at)}
+              </span>
+              <span className="flex items-center">
+                <User size={14} className="mr-1" />
+                Admin
+              </span>
+            </div>
 
-          <h2>The Role of Artificial Intelligence</h2>
-          <p>
-            AI has the potential to analyze complex medical data faster and more accurately than
-            humans, supporting doctors in making critical decisions.
-          </p>
+            <motion.h1
+              className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {post.title}
+            </motion.h1>
 
-          <h2>Telemedicine & Remote Monitoring</h2>
-          <p>
-            Virtual consultations and remote patient monitoring have increased access to healthcare,
-            especially in underserved areas.
-          </p>
-
-          <blockquote>
-            “The integration of technology into medicine is not just a trend—it’s the future of
-            saving lives.”
-          </blockquote>
-
-          <p>
-            As technology continues to advance, ethical considerations, privacy concerns, and
-            equitable access will remain vital topics of discussion.
-          </p>
-        </motion.section>
-
-        {/* Share Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center justify-between"
-        >
-          <p className="text-gray-700 font-medium">Share this article:</p>
-          <div className="flex gap-3">
-            <Button variant="outline" size="icon" className="hover:bg-gray-100">
-              <Twitter className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="hover:bg-gray-100">
-              <Facebook className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="hover:bg-gray-100">
-              <Linkedin className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="hover:bg-gray-100">
-              <Share2 className="h-4 w-4" />
-            </Button>
+            {post.excerpt && (
+              <motion.div
+                className="text-xl text-gray-600 leading-relaxed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+                dangerouslySetInnerHTML={{ __html: post.excerpt }}
+              />
+            )}
           </div>
-        </motion.div>
+
+          {/* Featured Image */}
+          {post.featured_image && (
+            <motion.div className="mb-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
+              <img src={post.featured_image} alt={post.title} className="w-full h-64 md:h-96 object-cover rounded-xl shadow-lg" />
+            </motion.div>
+          )}
+
+          {/* Share */}
+          <div className="flex items-center space-x-4 mb-8 pb-8 border-b border-gray-200">
+            <span className="text-gray-600 font-medium">Share this article:</span>
+            <div className="flex space-x-3">
+              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer"
+                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <Facebook size={16} />
+              </a>
+              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`} target="_blank" rel="noopener noreferrer"
+                className="p-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500 transition-colors">
+                <Twitter size={16} />
+              </a>
+              <button onClick={() => navigator.share?.({ title: shareTitle, url: shareUrl })}
+                className="p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                <Share2 size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <motion.div
+            className="prose prose-lg max-w-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
+
+          {/* Footer Tags */}
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <div className="flex flex-wrap gap-2">
+              {post.category && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
+                  #{post.category.slug}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
       </article>
+
+      {/* Related Posts */}
+      {relatedPosts.length > 0 && (
+        <motion.section
+          className="py-16 bg-white"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">Related Articles</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {relatedPosts.map((relatedPost, index) => (
+                <motion.div key={relatedPost.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.2 }}>
+                  <PostCard post={relatedPost} />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+      )}
+
+      <Footer />
     </div>
   );
-}
+};
+
+export default PostPage;
