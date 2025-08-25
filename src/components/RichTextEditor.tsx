@@ -34,7 +34,38 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       ],
     },
     clipboard: {
-      matchVisual: false,
+      matchVisual: true,
+      matchers: [
+        // Custom matcher to preserve markdown-style formatting
+        ['B', function(node: any, delta: any) {
+          return delta.compose(new (window as any).Quill.import('delta')().retain(delta.length(), { bold: true }));
+        }],
+        ['STRONG', function(node: any, delta: any) {
+          return delta.compose(new (window as any).Quill.import('delta')().retain(delta.length(), { bold: true }));
+        }],
+        // Handle asterisk-based markdown bold text
+        [Node.TEXT_NODE, function(node: any, delta: any) {
+          if (typeof node.data === 'string') {
+            let text = node.data;
+            // Convert **text** to bold
+            text = text.replace(/\*\*(.*?)\*\*/g, function(match: string, content: string) {
+              const Delta = (window as any).Quill.import('delta');
+              return content;
+            });
+            if (text !== node.data) {
+              const Delta = (window as any).Quill.import('delta');
+              const newDelta = new Delta().insert(text, { bold: true });
+              return newDelta;
+            }
+          }
+          return delta;
+        }]
+      ]
+    },
+    history: {
+      delay: 1000,
+      maxStack: 50,
+      userOnly: true
     }
   }), []);
 
@@ -58,6 +89,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         modules={modules}
         formats={formats}
         placeholder={placeholder}
+        preserveWhitespace={true}
         style={{
           height: height,
           marginBottom: '42px' // Account for toolbar height
