@@ -29,12 +29,12 @@ const PostPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50" style={{ fontFamily: 'Poppins, sans-serif' }}>
         <Header />
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-24 text-center">
-          <h1 className="text-6xl md:text-7xl font-black text-gray-900 mb-8 tracking-tight">Article Not Found</h1>
-          <p className="text-2xl text-gray-600 mb-12 leading-relaxed font-medium max-w-2xl mx-auto">The article you're looking for doesn't exist or has been removed.</p>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">Article Not Found</h1>
+          <p className="text-lg text-gray-600 mb-8 leading-relaxed font-medium max-w-2xl mx-auto">The article you're looking for doesn't exist or has been removed.</p>
           <Link 
             to="/blog" 
-            className="inline-flex items-center bg-blue-600 text-white px-12 py-5 rounded-2xl hover:bg-blue-700 transition-all duration-300 font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-1"
+            className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
           >
             Back to Articles
           </Link>
@@ -55,64 +55,64 @@ const PostPage: React.FC = () => {
       <Header />
 
       {/* Breadcrumb */}
-      <section className="bg-white py-8 border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-          <nav className="flex items-center space-x-4 text-lg">
-            <Link to="/" className="text-blue-600 hover:text-blue-800 font-semibold transition-colors duration-200">Home</Link>
-            <span className="text-gray-400 font-medium">/</span>
-            <Link to="/blog" className="text-blue-600 hover:text-blue-800 font-semibold transition-colors duration-200">Blog</Link>
-            <span className="text-gray-400 font-medium">/</span>
-            <span className="text-gray-600 font-bold truncate">{post.title}</span>
+      <section className="bg-white py-4 border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex items-center space-x-2 text-sm">
+            <Link to="/" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">Home</Link>
+            <span className="text-gray-400">/</span>
+            <Link to="/blog" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">Blog</Link>
+            <span className="text-gray-400">/</span>
+            <span className="text-gray-600 font-medium truncate">{post.title}</span>
           </nav>
         </div>
       </section>
 
       {/* Article */}
-      <article className="py-20">
-        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
+      <article className="py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
           <Link 
             to="/blog" 
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-16 transition-all duration-300 font-semibold text-xl group"
+            className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8 transition-colors font-medium group"
           >
-            <ArrowLeft size={24} className="mr-4 group-hover:-translate-x-2 transition-transform duration-300" />
+            <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to Articles
           </Link>
 
           {/* Meta Information */}
-          <div className="mb-16">
-            <div className="flex flex-wrap items-center gap-8 text-lg text-gray-600 mb-12">
+          <div className="mb-8">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
               {post.category && (
-                <span className="inline-flex items-center px-6 py-3 rounded-full text-base font-bold bg-blue-100 text-blue-800 border-2 border-blue-200 shadow-lg">
-                  <Tag size={18} className="mr-3" />
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <Tag size={12} className="mr-1" />
                   {post.category.name}
                 </span>
               )}
-              <span className="flex items-center font-semibold text-xl">
-                <Calendar size={22} className="mr-4 text-gray-400" />
+              <span className="flex items-center">
+                <Calendar size={14} className="mr-1" />
                 {formatDate(post.created_at)}
               </span>
-              <span className="flex items-center font-semibold text-xl">
-                <User size={22} className="mr-4 text-gray-400" />
+              <span className="flex items-center">
+                <User size={14} className="mr-1" />
                 Admin
               </span>
             </div>
 
             <motion.h1
-              className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black text-gray-900 leading-[0.95] mb-12 tracking-tight"
-              initial={{ opacity: 0, y: -30 }}
+              className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-6 tracking-tight"
+              initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.4 }}
             >
               {post.title}
             </motion.h1>
 
             {post.excerpt && (
               <motion.div
-                className="text-2xl md:text-3xl text-gray-600 leading-relaxed font-medium max-w-5xl"
+                className="text-xl text-gray-600 leading-relaxed"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.6 }}
                 dangerouslySetInnerHTML={{ __html: post.excerpt }}
               />
             )}
@@ -121,62 +121,62 @@ const PostPage: React.FC = () => {
           {/* Featured Image */}
           {post.featured_image && (
             <motion.div 
-              className="mb-20" 
-              initial={{ opacity: 0, y: 30 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ duration: 1 }}
+              className="mb-8" 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              transition={{ duration: 0.6 }}
             >
               <img 
                 src={post.featured_image} 
                 alt={post.title} 
-                className="w-full h-80 md:h-[36rem] lg:h-[42rem] object-cover rounded-3xl shadow-2xl border border-gray-200" 
+                className="w-full h-64 md:h-96 object-cover rounded-xl shadow-lg" 
               />
             </motion.div>
           )}
 
           {/* Share Section */}
-          <div className="flex flex-col lg:flex-row lg:items-center gap-8 mb-20 pb-16 border-b-2 border-gray-200">
-            <span className="text-gray-600 font-bold text-2xl">Share this article:</span>
-            <div className="flex space-x-6">
+          <div className="flex items-center space-x-4 mb-8 pb-8 border-b border-gray-200">
+            <span className="text-gray-600 font-medium">Share this article:</span>
+            <div className="flex space-x-3">
               <a 
                 href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="p-5 bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-2"
+                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                <Facebook size={24} />
+                <Facebook size={16} />
               </a>
               <a 
                 href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="p-5 bg-sky-400 text-white rounded-2xl hover:bg-sky-500 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-2"
+                className="p-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500 transition-colors"
               >
-                <Twitter size={24} />
+                <Twitter size={16} />
               </a>
               <button 
                 onClick={() => navigator.share?.({ title: shareTitle, url: shareUrl })}
-                className="p-5 bg-gray-600 text-white rounded-2xl hover:bg-gray-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-2"
+                className="p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
               >
-                <Share2 size={24} />
+                <Share2 size={16} />
               </button>
             </div>
           </div>
 
           {/* Article Content */}
           <motion.div
-            className="prose prose-2xl prose-gray max-w-none prose-headings:font-black prose-headings:text-gray-900 prose-headings:tracking-tight prose-h1:text-5xl prose-h2:text-4xl prose-h3:text-3xl prose-h4:text-2xl prose-p:text-gray-700 prose-p:leading-relaxed prose-p:text-xl prose-p:font-medium prose-a:text-blue-600 prose-a:font-bold prose-a:underline prose-a:decoration-2 prose-a:underline-offset-4 prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-strong:font-bold prose-blockquote:border-l-4 prose-blockquote:border-gray-400 prose-blockquote:pl-8 prose-blockquote:text-gray-600 prose-blockquote:italic prose-blockquote:text-2xl prose-blockquote:font-medium prose-code:text-gray-800 prose-code:bg-gray-100 prose-code:px-3 prose-code:py-2 prose-code:rounded-lg prose-code:font-semibold prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-2xl prose-li:text-gray-700 prose-li:text-xl prose-li:font-medium prose-img:rounded-2xl prose-img:shadow-xl prose-ul:space-y-2 prose-ol:space-y-2"
+            className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:tracking-tight prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:font-semibold prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-strong:font-semibold prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-6 prose-blockquote:text-gray-600 prose-blockquote:italic prose-code:text-gray-800 prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-li:text-gray-700 prose-img:rounded-xl prose-img:shadow-lg"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1.2 }}
+            transition={{ duration: 0.8 }}
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
           {/* Tags Section */}
-          <div className="mt-20 pt-16 border-t-2 border-gray-200">
-            <div className="flex flex-wrap gap-4">
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <div className="flex flex-wrap gap-2">
               {post.category && (
-                <span className="inline-flex items-center px-6 py-3 rounded-full text-lg font-bold bg-gray-100 text-gray-800 border-2 border-gray-300 hover:bg-gray-200 transition-all duration-300 shadow-lg">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800">
                   #{post.category.slug}
                 </span>
               )}
@@ -188,21 +188,20 @@ const PostPage: React.FC = () => {
       {/* Related Posts Section */}
       {relatedPosts.length > 0 && (
         <motion.section
-          className="py-24 bg-white border-t-2 border-gray-200"
+          className="py-16 bg-white"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1.4 }}
+          transition={{ duration: 1 }}
         >
-          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-            <h2 className="text-5xl md:text-6xl font-black text-gray-900 mb-16 tracking-tight">Related Articles</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">Related Articles</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {relatedPosts.map((relatedPost, index) => (
                 <motion.div 
                   key={relatedPost.id} 
-                  initial={{ opacity: 0, y: 40 }} 
+                  initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
-                  transition={{ delay: index * 0.3, duration: 0.8 }}
-                  className="transform hover:-translate-y-2 transition-all duration-300"
+                  transition={{ delay: index * 0.2 }}
                 >
                   <PostCard post={relatedPost} />
                 </motion.div>
