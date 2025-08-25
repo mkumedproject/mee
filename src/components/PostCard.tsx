@@ -74,7 +74,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0 }
             >
               <Link to={`/post/${post.slug}`}>{post.title}</Link>
             </motion.h2>
-            <p className="text-gray-600 mb-6 leading-relaxed text-lg">{post.excerpt}</p>
+
+            {/* Render excerpt with full HTML formatting */}
+            <div
+              className="prose prose-lg text-gray-600 mb-6 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: post.excerpt }}
+            />
+
             <motion.div whileHover={{ x: 5 }}>
               <Link
                 to={`/post/${post.slug}`}
@@ -139,8 +145,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0 }
           <Link to={`/post/${post.slug}`}>{post.title}</Link>
         </motion.h3>
         
-        <p className="text-gray-600 mb-4 line-clamp-3 leading-relaxed">{post.excerpt}</p>
-        
+        {/* Render excerpt with HTML support */}
+        <div
+          className="prose prose-base text-gray-600 mb-4 leading-relaxed line-clamp-3"
+          dangerouslySetInnerHTML={{ __html: post.excerpt }}
+        />
+
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 text-sm text-gray-500">
             <User size={14} />
