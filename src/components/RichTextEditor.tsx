@@ -35,11 +35,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     },
     clipboard: {
       matchVisual: true,
-    },
-    history: {
-      delay: 1000,
-      maxStack: 50,
-      userOnly: true
     }
   }), []);
 
