@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useBlog } from '../../context/BlogContext';
+import { useMedfly } from '../../context/MedflyContext';
 import RichTextEditor from '../../components/RichTextEditor';
 import toast, { Toaster } from 'react-hot-toast';
 import { 
@@ -21,7 +22,8 @@ import {
   Settings,
   MoreHorizontal,
   Copy,
-  ExternalLink
+  ExternalLink,
+  GraduationCap
 } from 'lucide-react';
 
 interface Post {
@@ -31,13 +33,21 @@ interface Post {
   excerpt: string;
   content: string;
   featured_image?: string;
-  category_id: string;
+  unit_id: string;
+  year_id: string;
+  lecturer_id: string;
   published: boolean;
   created_at: string;
   updated_at: string;
-  category?: {
+  unit?: {
     id: string;
-    name: string;
+    unit_code: string;
+    unit_name: string;
+  };
+  year?: {
+    id: string;
+    year_number: number;
+    year_name: string;
   };
 }
 
@@ -47,7 +57,9 @@ interface FormData {
   excerpt: string;
   content: string;
   featured_image: string;
-  category_id: string;
+  unit_id: string;
+  year_id: string;
+  lecturer_id: string;
   published: boolean;
 }
 
@@ -57,18 +69,23 @@ const INITIAL_FORM_DATA: FormData = {
   excerpt: '',
   content: '',
   featured_image: '',
-  category_id: '',
+  unit_id: '',
+  year_id: '',
+  lecturer_id: '',
   published: false,
 };
 
 const PostManager: React.FC = () => {
   const { state, createPost, updatePost, deletePost } = useBlog();
   const { posts, categories, loading } = state;
+  const { state: medflyState } = useMedfly();
+  const { years, units, lecturers } = medflyState;
 
   // State management
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [yearFilter, setYearFilter] = useState('all');
+  const [unitFilter, setUnitFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -82,10 +99,11 @@ const PostManager: React.FC = () => {
       const matchesStatus = statusFilter === 'all' || 
                            (statusFilter === 'published' && post.published) ||
                            (statusFilter === 'draft' && !post.published);
-      const matchesCategory = categoryFilter === 'all' || post.category_id === categoryFilter;
-      return matchesSearch && matchesStatus && matchesCategory;
+      const matchesYear = yearFilter === 'all' || post.year_id === yearFilter;
+      const matchesUnit = unitFilter === 'all' || post.unit_id === unitFilter;
+      return matchesSearch && matchesStatus && matchesYear && matchesUnit;
     });
-  }, [posts, searchTerm, statusFilter, categoryFilter]);
+  }, [posts, searchTerm, statusFilter, yearFilter, unitFilter]);
 
   // Utility functions
   const generateSlug = useCallback((title: string): string => {
@@ -143,8 +161,12 @@ const PostManager: React.FC = () => {
       toast.error('Post content is required');
       return false;
     }
-    if (!formData.category_id) {
-      toast.error('Please select a category');
+    if (!formData.unit_id) {
+      toast.error('Please select a unit');
+      return false;
+    }
+    if (!formData.year_id) {
+      toast.error('Please select a year');
       return false;
     }
     return true;
@@ -197,7 +219,9 @@ const PostManager: React.FC = () => {
       excerpt: post.excerpt,
       content: post.content,
       featured_image: post.featured_image || '',
-      category_id: post.category_id,
+      unit_id: post.unit_id || '',
+      year_id: post.year_id || '',
+      lecturer_id: post.lecturer_id || '',
       published: post.published,
     });
     setShowForm(true);
@@ -318,7 +342,7 @@ const PostManager: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div className="md:col-span-2">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -344,14 +368,28 @@ const PostManager: React.FC = () => {
                   </div>
                   <div>
                     <select
-                      value={categoryFilter}
-                      onChange={(e) => setCategoryFilter(e.target.value)}
+                      value={yearFilter}
+                      onChange={(e) => setYearFilter(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
-                      <option value="all">All Categories</option>
-                      {categories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
+                      <option value="all">All Years</option>
+                      {years.map((year) => (
+                        <option key={year.id} value={year.id}>
+                          Year {year.year_number} - {year.year_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <select
+                      value={unitFilter}
+                      onChange={(e) => setUnitFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="all">All Units</option>
+                      {units.map((unit) => (
+                        <option key={unit.id} value={unit.id}>
+                          {unit.unit_code} - {unit.unit_name}
                         </option>
                       ))}
                     </select>
@@ -397,10 +435,10 @@ const PostManager: React.FC = () => {
                           </span>
                         </div>
                         <div className="absolute top-3 right-3">
-                          {post.category && (
+                          {post.unit && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                               <Tag className="w-3 h-3 mr-1" />
-                              {post.category.name}
+                              {post.unit.unit_code}
                             </span>
                           )}
                         </div>
@@ -418,6 +456,12 @@ const PostManager: React.FC = () => {
                               <Clock className="w-3 h-3 mr-1" />
                               {calculateReadTime(post.content)} min read
                             </span>
+                            {post.year && (
+                              <span className="flex items-center">
+                                <GraduationCap className="w-3 h-3 mr-1" />
+                                Year {post.year.year_number}
+                              </span>
+                            )}
                           </div>
                         </div>
                         
@@ -663,24 +707,65 @@ const PostManager: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Category */}
-                    <div className="bg-gray-50 p-6 rounded-lg">
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Category *
-                      </label>
-                      <select
-                        value={formData.category_id}
-                        onChange={(e) => handleFormDataChange('category_id', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        required
-                      >
-                        <option value="">Select a category</option>
-                        {categories.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
+                    {/* Academic Information */}
+                    <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Academic Year *
+                        </label>
+                        <select
+                          value={formData.year_id}
+                          onChange={(e) => handleFormDataChange('year_id', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        >
+                          <option value="">Select a year</option>
+                          {years.map((year) => (
+                            <option key={year.id} value={year.id}>
+                              Year {year.year_number} - {year.year_name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Unit/Subject *
+                        </label>
+                        <select
+                          value={formData.unit_id}
+                          onChange={(e) => handleFormDataChange('unit_id', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required
+                        >
+                          <option value="">Select a unit</option>
+                          {units
+                            .filter(unit => !formData.year_id || unit.year_id === formData.year_id)
+                            .map((unit) => (
+                            <option key={unit.id} value={unit.id}>
+                              {unit.unit_code} - {unit.unit_name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Lecturer
+                        </label>
+                        <select
+                          value={formData.lecturer_id}
+                          onChange={(e) => handleFormDataChange('lecturer_id', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">Select a lecturer</option>
+                          {lecturers.map((lecturer) => (
+                            <option key={lecturer.id} value={lecturer.id}>
+                              {lecturer.title} {lecturer.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
 
                     {/* Publishing Options */}

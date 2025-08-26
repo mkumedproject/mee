@@ -1,71 +1,99 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useBlog } from '../context/BlogContext';
+import { useMedfly } from '../context/MedflyContext';
 import { 
   FileText, 
-  FolderOpen, 
+  BookOpen,
+  GraduationCap,
+  Users,
   Eye, 
   TrendingUp, 
   Calendar,
-  PlusCircle 
+  PlusCircle,
+  Stethoscope,
+  Activity
 } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {
-  const { state } = useBlog();
-  const { posts, categories } = state;
+  const { state } = useMedfly();
+  const { notes, years, units, lecturers } = state;
 
-  const publishedPosts = posts.filter(post => post.published);
-  const draftPosts = posts.filter(post => !post.published);
+  const publishedNotes = notes.filter(note => note.is_published);
+  const draftNotes = notes.filter(note => !note.is_published);
+  const featuredNotes = notes.filter(note => note.is_featured);
 
   const stats = [
     {
-      label: 'Total Posts',
-      value: posts.length,
+      label: 'Total Notes',
+      value: notes.length,
       icon: FileText,
       color: 'blue',
       change: '+12%'
     },
     {
       label: 'Published',
-      value: publishedPosts.length,
+      value: publishedNotes.length,
       icon: Eye,
       color: 'green',
       change: '+5%'
     },
     {
-      label: 'Drafts',
-      value: draftPosts.length,
-      icon: Calendar,
+      label: 'Academic Years',
+      value: years.length,
+      icon: GraduationCap,
       color: 'yellow',
-      change: '+8%'
+      change: '0%'
     },
     {
-      label: 'Categories',
-      value: categories.length,
-      icon: FolderOpen,
+      label: 'Medical Units',
+      value: units.length,
+      icon: BookOpen,
       color: 'purple',
-      change: '+2%'
+      change: '+15%'
+    },
+    {
+      label: 'Lecturers',
+      value: lecturers.length,
+      icon: Users,
+      color: 'indigo',
+      change: '+3%'
+    },
+    {
+      label: 'Featured Notes',
+      value: featuredNotes.length,
+      icon: Activity,
+      color: 'green',
+      change: '+8%'
     },
   ];
 
   const quickActions = [
-    { label: 'Create New Post', href: '/admin/posts?action=new', icon: FileText, color: 'blue' },
-    { label: 'Add Category', href: '/admin/categories?action=new', icon: FolderOpen, color: 'green' },
-    { label: 'View All Posts', href: '/admin/posts', icon: Eye, color: 'purple' },
+    { label: 'Create New Note', href: '/admin/notes', icon: FileText, color: 'blue' },
+    { label: 'Manage Units', href: '/admin/units', icon: BookOpen, color: 'green' },
+    { label: 'Manage Lecturers', href: '/admin/lecturers', icon: Users, color: 'purple' },
+    { label: 'View All Notes', href: '/admin/notes', icon: Eye, color: 'indigo' },
   ];
 
-  const recentPosts = posts.slice(0, 5);
+  const recentNotes = notes.slice(0, 5);
 
   return (
     <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-        <p className="text-gray-600">Welcome back! Here's what's happening with your blog.</p>
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center">
+            <Stethoscope className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Medfly Dashboard</h1>
+            <p className="text-gray-600">Medical Notes Platform Administration</p>
+          </div>
+        </div>
+        <p className="text-gray-600">Welcome back! Here's what's happening with your medical notes platform.</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -116,31 +144,36 @@ const AdminDashboard: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white p-6 rounded-xl shadow-sm border">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Posts</h2>
-              <Link to="/admin/posts" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+              <h2 className="text-lg font-semibold text-gray-900">Recent Notes</h2>
+              <Link to="/admin/notes" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
                 View All
               </Link>
             </div>
             <div className="space-y-3">
-              {recentPosts.map((post) => (
-                <div key={post.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+              {recentNotes.map((note) => (
+                <div key={note.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
                   <div className="flex-1">
-                    <h3 className="font-medium text-gray-900 truncate">{post.title}</h3>
+                    <h3 className="font-medium text-gray-900 truncate">{note.title}</h3>
                     <div className="flex items-center space-x-4 mt-1">
                       <span className="text-sm text-gray-500">
-                        {new Date(post.created_at).toLocaleDateString()}
+                        {new Date(note.created_at).toLocaleDateString()}
                       </span>
+                      {note.unit && (
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                          {note.unit.unit_code}
+                        </span>
+                      )}
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        post.published 
+                        note.is_published 
                           ? 'bg-green-100 text-green-800' 
                           : 'bg-yellow-100 text-yellow-800'
                       }`}>
-                        {post.published ? 'Published' : 'Draft'}
+                        {note.is_published ? 'Published' : 'Draft'}
                       </span>
                     </div>
                   </div>
                   <Link
-                    to={`/admin/posts?edit=${post.id}`}
+                    to={`/admin/notes`}
                     className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                   >
                     Edit
