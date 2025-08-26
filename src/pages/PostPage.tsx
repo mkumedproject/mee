@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -7,33 +7,53 @@ import { useBlog } from '../context/BlogContext';
 import { Calendar, User, Tag, ArrowLeft, Share2, Facebook, Twitter } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// Add Poppins font import
-const poppinsLink = document.createElement('link');
-poppinsLink.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap';
-poppinsLink.rel = 'stylesheet';
-if (!document.querySelector(`link[href="${poppinsLink.href}"]`)) {
-  document.head.appendChild(poppinsLink);
-}
-
 const PostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { state } = useBlog();
-  const { posts } = state;
+  const { posts, loading } = state;
 
+  // Find the current post
   const post = posts.find(p => p.slug === slug);
+
+  // Get related posts
   const relatedPosts = posts
     .filter(p => p.published && p.id !== post?.id && p.category_id === post?.category_id)
     .slice(0, 3);
 
+  // Set font dynamically (runs only once)
+  useEffect(() => {
+    const poppinsLink = document.createElement('link');
+    poppinsLink.href =
+      'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap';
+    poppinsLink.rel = 'stylesheet';
+    if (!document.querySelector(`link[href="${poppinsLink.href}"]`)) {
+      document.head.appendChild(poppinsLink);
+    }
+  }, []);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-gray-600 text-lg">
+        Loading article...
+      </div>
+    );
+  }
+
+  // If post not found
   if (!post) {
     return (
       <div className="min-h-screen bg-gray-50" style={{ fontFamily: 'Poppins, sans-serif' }}>
         <Header />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">Article Not Found</h1>
-          <p className="text-lg text-gray-600 mb-8 leading-relaxed font-medium max-w-2xl mx-auto">The article you're looking for doesn't exist or has been removed.</p>
-          <Link 
-            to="/blog" 
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">
+            Article Not Found
+          </h1>
+          <p className="text-lg text-gray-600 mb-8 leading-relaxed font-medium max-w-2xl mx-auto">
+            The article you're looking for doesn't exist or has been removed.
+          </p>
+          <Link
+            to="/blog"
             className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
           >
             Back to Articles
@@ -44,9 +64,15 @@ const PostPage: React.FC = () => {
     );
   }
 
+  // Format date
   const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
 
+  // Sharing info
   const shareUrl = window.location.href;
   const shareTitle = post.title;
 
@@ -58,9 +84,13 @@ const PostPage: React.FC = () => {
       <section className="bg-white py-4 border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center space-x-2 text-sm">
-            <Link to="/" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">Home</Link>
+            <Link to="/" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">
+              Home
+            </Link>
             <span className="text-gray-400">/</span>
-            <Link to="/blog" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">Blog</Link>
+            <Link to="/blog" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">
+              Blog
+            </Link>
             <span className="text-gray-400">/</span>
             <span className="text-gray-600 font-medium truncate">{post.title}</span>
           </nav>
@@ -71,8 +101,8 @@ const PostPage: React.FC = () => {
       <article className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
-          <Link 
-            to="/blog" 
+          <Link
+            to="/blog"
             className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8 transition-colors font-medium group"
           >
             <ArrowLeft size={16} className="mr-2 group-hover:-translate-x-1 transition-transform" />
@@ -120,16 +150,16 @@ const PostPage: React.FC = () => {
 
           {/* Featured Image */}
           {post.featured_image && (
-            <motion.div 
-              className="mb-8" 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
+            <motion.div
+              className="mb-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 0.6 }}
             >
-              <img 
-                src={post.featured_image} 
-                alt={post.title} 
-                className="w-full h-64 md:h-96 object-cover rounded-xl shadow-lg" 
+              <img
+                src={post.featured_image}
+                alt={post.title}
+                className="w-full h-64 md:h-96 object-cover rounded-xl shadow-lg"
               />
             </motion.div>
           )}
@@ -138,23 +168,25 @@ const PostPage: React.FC = () => {
           <div className="flex items-center space-x-4 mb-8 pb-8 border-b border-gray-200">
             <span className="text-gray-600 font-medium">Share this article:</span>
             <div className="flex space-x-3">
-              <a 
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} 
-                target="_blank" 
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Facebook size={16} />
               </a>
-              <a 
-                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`} 
-                target="_blank" 
+              <a
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                  shareUrl
+                )}&text=${encodeURIComponent(shareTitle)}`}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 bg-sky-400 text-white rounded-lg hover:bg-sky-500 transition-colors"
               >
                 <Twitter size={16} />
               </a>
-              <button 
+              <button
                 onClick={() => navigator.share?.({ title: shareTitle, url: shareUrl })}
                 className="p-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
               >
@@ -164,13 +196,15 @@ const PostPage: React.FC = () => {
           </div>
 
           {/* Article Content */}
-          <motion.div
-            className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:tracking-tight prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:font-semibold prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-strong:font-semibold prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-6 prose-blockquote:text-gray-600 prose-blockquote:italic prose-code:text-gray-800 prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-li:text-gray-700 prose-img:rounded-xl prose-img:shadow-lg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          {post.content && (
+            <motion.div
+              className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-headings:tracking-tight prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-a:font-semibold prose-a:hover:text-blue-800 prose-strong:text-gray-900 prose-strong:font-semibold prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-6 prose-blockquote:text-gray-600 prose-blockquote:italic prose-code:text-gray-800 prose-code:bg-gray-100 prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-li:text-gray-700 prose-img:rounded-xl prose-img:shadow-lg"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+          )}
 
           {/* Tags Section */}
           <div className="mt-12 pt-8 border-t border-gray-200">
@@ -197,10 +231,10 @@ const PostPage: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-8">Related Articles</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {relatedPosts.map((relatedPost, index) => (
-                <motion.div 
-                  key={relatedPost.id} 
-                  initial={{ opacity: 0, y: 20 }} 
-                  animate={{ opacity: 1, y: 0 }} 
+                <motion.div
+                  key={relatedPost.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.2 }}
                 >
                   <PostCard post={relatedPost} />
