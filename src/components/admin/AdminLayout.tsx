@@ -4,11 +4,14 @@ import { supabase } from '../../lib/supabase';
 import { 
   LayoutDashboard, 
   FileText, 
-  FolderOpen, 
+  BookOpen,
+  GraduationCap,
+  Users,
   Settings, 
   LogOut, 
   User,
-  Home
+  Home,
+  Stethoscope
 } from 'lucide-react';
 
 const AdminLayout: React.FC = () => {
@@ -48,8 +51,9 @@ const AdminLayout: React.FC = () => {
 
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'Posts', href: '/admin/posts', icon: FileText },
-    { name: 'Categories', href: '/admin/categories', icon: FolderOpen },
+    { name: 'Notes', href: '/admin/notes', icon: FileText },
+    { name: 'Units', href: '/admin/units', icon: BookOpen },
+    { name: 'Lecturers', href: '/admin/lecturers', icon: Users },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
@@ -67,12 +71,12 @@ const AdminLayout: React.FC = () => {
         {/* Logo */}
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
-            <div className="bg-blue-600 text-white p-2 rounded-lg">
-              <div className="w-6 h-6 flex items-center justify-center font-bold">TA</div>
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-2 rounded-xl">
+              <Stethoscope className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900">Admin Panel</h1>
-              <p className="text-sm text-gray-600">Teachers Arena</p>
+              <h1 className="text-lg font-bold text-gray-900">Medfly Admin</h1>
+              <p className="text-sm text-gray-600">Medical Notes Platform</p>
             </div>
           </div>
         </div>

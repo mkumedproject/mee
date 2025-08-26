@@ -2,9 +2,13 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Database } from '../lib/supabase';
 
-export type Category = Database['public']['Tables']['categories']['Row'];
-export type Post = Database['public']['Tables']['posts']['Row'] & {
+// Update types to match medical platform
+export type Category = Database['public']['Tables']['tags']['Row'];
+export type Post = Database['public']['Tables']['notes']['Row'] & {
   category?: Category;
+  unit?: any;
+  year?: any;
+  lecturer?: any;
 };
 
 interface BlogState {
@@ -86,11 +90,11 @@ const BlogContext = createContext<{
   dispatch: React.Dispatch<BlogAction>;
   fetchPosts: () => Promise<void>;
   fetchCategories: () => Promise<void>;
-  createPost: (post: Database['public']['Tables']['posts']['Insert']) => Promise<void>;
-  updatePost: (id: string, post: Database['public']['Tables']['posts']['Update']) => Promise<void>;
+  createPost: (post: any) => Promise<void>;
+  updatePost: (id: string, post: any) => Promise<void>;
   deletePost: (id: string) => Promise<void>;
-  createCategory: (category: Database['public']['Tables']['categories']['Insert']) => Promise<void>;
-  updateCategory: (id: string, category: Database['public']['Tables']['categories']['Update']) => Promise<void>;
+  createCategory: (category: any) => Promise<void>;
+  updateCategory: (id: string, category: any) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
 }>({
   state: initialState,
@@ -108,152 +112,239 @@ const BlogContext = createContext<{
 export const BlogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(blogReducer, initialState);
 
-  // Fetch posts with categories
+  // Fetch notes (posts) with relationships
   const fetchPosts = async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const { data: posts, error } = await supabase
-        .from('posts')
+      const { data: notes, error } = await supabase
+        .from('notes')
         .select(`
           *,
-          category:categories(*)
+          unit:units(*),
+          year:years(*),
+          lecturer:lecturers(*),
+          tags:note_tags(tag:tags(*))
         `)
+        .eq('is_published', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      dispatch({ type: 'SET_POSTS', payload: posts || [] });
+      
+      // Transform the data to flatten tags
+      const transformedNotes = notes?.map(note => ({
+        ...note,
+        published: note.is_published,
+        category: note.tags?.[0]?.tag || null,
+        tags: note.tags?.map((nt: any) => nt.tag) || []
+      })) || [];
+
+      dispatch({ type: 'SET_POSTS', payload: transformedNotes });
     } catch (error) {
-      console.error('Error fetching posts:', error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch posts' });
+      console.error('Error fetching notes:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch notes' });
     }
   };
 
-  // Fetch categories
+  // Fetch tags (categories)
   const fetchCategories = async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const { data: categories, error } = await supabase
-        .from('categories')
+      const { data: tags, error } = await supabase
+        .from('tags')
         .select('*')
-        .order('name');
+        .order('tag_name');
 
       if (error) throw error;
-      dispatch({ type: 'SET_CATEGORIES', payload: categories || [] });
+      
+      // Transform tags to match category structure
+      const transformedTags = tags?.map(tag => ({
+        ...tag,
+        name: tag.tag_name,
+        slug: tag.tag_name.toLowerCase().replace(/\s+/g, '-')
+      })) || [];
+
+      dispatch({ type: 'SET_CATEGORIES', payload: transformedTags });
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error('Error fetching tags:', error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to fetch categories' });
     }
   };
 
-  // Create post
-  const createPost = async (postData: Database['public']['Tables']['posts']['Insert']) => {
+  // Create note (post)
+  const createPost = async (postData: any) => {
     try {
-      const { data: post, error } = await supabase
-        .from('posts')
-        .insert(postData)
+      const noteData = {
+        title: postData.title,
+        slug: postData.slug,
+        content: postData.content,
+        excerpt: postData.excerpt,
+        unit_id: postData.unit_id,
+        year_id: postData.year_id,
+        lecturer_id: postData.lecturer_id,
+        featured_image: postData.featured_image,
+        is_published: postData.published || false,
+        is_featured: false,
+        difficulty_level: 'Intermediate',
+        estimated_read_time: Math.ceil(postData.content.split(' ').length / 200)
+      };
+
+      const { data: note, error } = await supabase
+        .from('notes')
+        .insert(noteData)
         .select(`
           *,
-          category:categories(*)
+          unit:units(*),
+          year:years(*),
+          lecturer:lecturers(*)
         `)
         .single();
 
       if (error) throw error;
-      dispatch({ type: 'ADD_POST', payload: post });
+      
+      const transformedNote = {
+        ...note,
+        published: note.is_published
+      };
+      
+      dispatch({ type: 'ADD_POST', payload: transformedNote });
     } catch (error) {
-      console.error('Error creating post:', error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to create post' });
+      console.error('Error creating note:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to create note' });
       throw error;
     }
   };
 
-  // Update post
-  const updatePost = async (id: string, postData: Database['public']['Tables']['posts']['Update']) => {
+  // Update note (post)
+  const updatePost = async (id: string, postData: any) => {
     try {
-      const { data: post, error } = await supabase
-        .from('posts')
-        .update(postData)
+      const noteData = {
+        title: postData.title,
+        slug: postData.slug,
+        content: postData.content,
+        excerpt: postData.excerpt,
+        featured_image: postData.featured_image,
+        is_published: postData.published,
+        updated_at: new Date().toISOString()
+      };
+
+      const { data: note, error } = await supabase
+        .from('notes')
+        .update(noteData)
         .eq('id', id)
         .select(`
           *,
-          category:categories(*)
+          unit:units(*),
+          year:years(*),
+          lecturer:lecturers(*)
         `)
         .single();
 
       if (error) throw error;
-      dispatch({ type: 'UPDATE_POST', payload: post });
+      
+      const transformedNote = {
+        ...note,
+        published: note.is_published
+      };
+      
+      dispatch({ type: 'UPDATE_POST', payload: transformedNote });
     } catch (error) {
-      console.error('Error updating post:', error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to update post' });
+      console.error('Error updating note:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to update note' });
       throw error;
     }
   };
 
-  // Delete post
+  // Delete note (post)
   const deletePost = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('posts')
+        .from('notes')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
       dispatch({ type: 'DELETE_POST', payload: id });
     } catch (error) {
-      console.error('Error deleting post:', error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to delete post' });
+      console.error('Error deleting note:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to delete note' });
       throw error;
     }
   };
 
-  // Create category
-  const createCategory = async (categoryData: Database['public']['Tables']['categories']['Insert']) => {
+  // Create tag (category)
+  const createCategory = async (categoryData: any) => {
     try {
-      const { data: category, error } = await supabase
-        .from('categories')
-        .insert(categoryData)
+      const tagData = {
+        tag_name: categoryData.name,
+        description: categoryData.description,
+        color_code: '#6B7280'
+      };
+
+      const { data: tag, error } = await supabase
+        .from('tags')
+        .insert(tagData)
         .select()
         .single();
 
       if (error) throw error;
-      dispatch({ type: 'ADD_CATEGORY', payload: category });
+      
+      const transformedTag = {
+        ...tag,
+        name: tag.tag_name,
+        slug: tag.tag_name.toLowerCase().replace(/\s+/g, '-')
+      };
+      
+      dispatch({ type: 'ADD_CATEGORY', payload: transformedTag });
     } catch (error) {
-      console.error('Error creating category:', error);
+      console.error('Error creating tag:', error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to create category' });
       throw error;
     }
   };
 
-  // Update category
-  const updateCategory = async (id: string, categoryData: Database['public']['Tables']['categories']['Update']) => {
+  // Update tag (category)
+  const updateCategory = async (id: string, categoryData: any) => {
     try {
-      const { data: category, error } = await supabase
-        .from('categories')
-        .update(categoryData)
+      const tagData = {
+        tag_name: categoryData.name,
+        description: categoryData.description
+      };
+
+      const { data: tag, error } = await supabase
+        .from('tags')
+        .update(tagData)
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
-      dispatch({ type: 'UPDATE_CATEGORY', payload: category });
+      
+      const transformedTag = {
+        ...tag,
+        name: tag.tag_name,
+        slug: tag.tag_name.toLowerCase().replace(/\s+/g, '-')
+      };
+      
+      dispatch({ type: 'UPDATE_CATEGORY', payload: transformedTag });
     } catch (error) {
-      console.error('Error updating category:', error);
+      console.error('Error updating tag:', error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to update category' });
       throw error;
     }
   };
 
-  // Delete category
+  // Delete tag (category)
   const deleteCategory = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('categories')
+        .from('tags')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
       dispatch({ type: 'DELETE_CATEGORY', payload: id });
     } catch (error) {
-      console.error('Error deleting category:', error);
+      console.error('Error deleting tag:', error);
       dispatch({ type: 'SET_ERROR', payload: 'Failed to delete category' });
       throw error;
     }
@@ -265,34 +356,34 @@ export const BlogProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchPosts();
     fetchCategories();
 
-    // Set up real-time subscription for posts
-    const postsSubscription = supabase
-      .channel('posts_changes')
+    // Set up real-time subscription for notes
+    const notesSubscription = supabase
+      .channel('notes_changes')
       .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'posts' },
+        { event: '*', schema: 'public', table: 'notes' },
         (payload) => {
-          console.log('Posts change received:', payload);
-          fetchPosts(); // Refetch posts to get updated data with categories
+          console.log('Notes change received:', payload);
+          fetchPosts(); // Refetch notes to get updated data with relationships
         }
       )
       .subscribe();
 
-    // Set up real-time subscription for categories
-    const categoriesSubscription = supabase
-      .channel('categories_changes')
+    // Set up real-time subscription for tags
+    const tagsSubscription = supabase
+      .channel('tags_changes')
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'categories' },
+        { event: '*', schema: 'public', table: 'tags' },
         (payload) => {
-          console.log('Categories change received:', payload);
-          fetchCategories(); // Refetch categories
+          console.log('Tags change received:', payload);
+          fetchCategories(); // Refetch tags
         }
       )
       .subscribe();
 
     // Cleanup subscriptions
     return () => {
-      supabase.removeChannel(postsSubscription);
-      supabase.removeChannel(categoriesSubscription);
+      supabase.removeChannel(notesSubscription);
+      supabase.removeChannel(tagsSubscription);
     };
   }, []);
 
