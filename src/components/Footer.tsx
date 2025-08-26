@@ -1,6 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Youtube, Instagram, Mail, Phone, MapPin, Heart, ArrowUp } from 'lucide-react';
+import { 
+  Stethoscope, 
+  Mail, 
+  Phone, 
+  MapPin, 
+  Heart, 
+  ArrowUp,
+  BookOpen,
+  GraduationCap,
+  Users,
+  Award,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Footer: React.FC = () => {
@@ -11,39 +26,48 @@ const Footer: React.FC = () => {
   };
 
   const footerLinks = {
-    quickLinks: [
-      { name: 'Home', href: '/' },
-      { name: 'All Posts', href: '/blog' },
-      { name: 'Categories', href: '/blog?category=all' },
-      { name: 'About Us', href: '/about' },
-      { name: 'Contact', href: '/contact' },
+    platform: [
+      { name: 'Browse Notes', href: '/search' },
+      { name: 'Academic Years', href: '/search?view=years' },
+      { name: 'Medical Units', href: '/search?view=units' },
+      { name: 'Featured Content', href: '/search?featured=true' },
+      { name: 'Recent Updates', href: '/search?sort=recent' },
     ],
-    categories: [
-      { name: 'Education News', href: '/blog?category=education-news' },
-      { name: 'Teacher Resources', href: '/blog?category=teacher-resources' },
-      { name: 'Exam Information', href: '/blog?category=exam-information' },
-      { name: 'Policy Updates', href: '/blog?category=policy-updates' },
-      { name: 'Career Guidance', href: '/blog?category=career-guidance' },
+    years: [
+      { name: 'Year 1 - Foundation', href: '/year/1' },
+      { name: 'Year 2 - Pre-Clinical', href: '/year/2' },
+      { name: 'Year 3 - Clinical Intro', href: '/year/3' },
+      { name: 'Year 4 - Clinical Rotations', href: '/year/4' },
+      { name: 'Year 5 - Advanced Clinical', href: '/year/5' },
+      { name: 'Year 6 - Internship', href: '/year/6' },
     ],
-    legal: [
+    support: [
+      { name: 'Help Center', href: '/help' },
+      { name: 'Contact Us', href: '/contact' },
       { name: 'Privacy Policy', href: '/privacy' },
       { name: 'Terms of Service', href: '/terms' },
       { name: 'Cookie Policy', href: '/cookies' },
-      { name: 'Disclaimer', href: '/disclaimer' },
     ]
   };
 
   const socialLinks = [
     { icon: Facebook, href: '#', color: 'hover:text-blue-600', bg: 'hover:bg-blue-50' },
     { icon: Twitter, href: '#', color: 'hover:text-sky-500', bg: 'hover:bg-sky-50' },
-    { icon: Youtube, href: '#', color: 'hover:text-red-600', bg: 'hover:bg-red-50' },
     { icon: Instagram, href: '#', color: 'hover:text-pink-600', bg: 'hover:bg-pink-50' },
+    { icon: Linkedin, href: '#', color: 'hover:text-blue-700', bg: 'hover:bg-blue-50' },
   ];
 
   const contactInfo = [
-    { icon: Mail, text: 'contact@teachersarena.com', color: 'text-blue-600' },
+    { icon: Mail, text: 'contact@medfly.africa', color: 'text-blue-600' },
     { icon: Phone, text: '+254 712 345 678', color: 'text-green-600' },
     { icon: MapPin, text: 'Nairobi, Kenya', color: 'text-red-600' },
+  ];
+
+  const stats = [
+    { icon: BookOpen, label: 'Medical Notes', value: '1,000+' },
+    { icon: GraduationCap, label: 'Students Served', value: '10,000+' },
+    { icon: Users, label: 'Expert Lecturers', value: '50+' },
+    { icon: Award, label: 'Universities', value: '25+' },
   ];
 
   return (
@@ -56,6 +80,35 @@ const Footer: React.FC = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Stats Section */}
+        <motion.div 
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16 pb-16 border-b border-gray-800"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <motion.div 
+                key={index}
+                className="text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600 rounded-xl mb-3">
+                  <Icon size={24} className="text-white" />
+                </div>
+                <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+                <div className="text-sm text-gray-400">{stat.label}</div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* About Section */}
           <motion.div 
@@ -68,18 +121,18 @@ const Footer: React.FC = () => {
             <div className="flex items-center space-x-3">
               <div className="relative">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-xl">TA</span>
+                  <Stethoscope className="w-6 h-6 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-pulse"></div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
               </div>
               <div>
-                <h3 className="text-xl font-bold font-display">Teachers Arena</h3>
-                <p className="text-sm text-gray-400">Your Education Hub</p>
+                <h3 className="text-xl font-bold font-display">Medfly</h3>
+                <p className="text-sm text-gray-400">Medical Education Hub</p>
               </div>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
-              Empowering educators with the latest news, resources, and insights in the education sector. 
-              Stay informed and connected with Teachers Arena - your trusted partner in educational excellence.
+              Empowering African medical students with comprehensive study materials, expert insights, 
+              and collaborative learning resources. Your trusted partner in medical education excellence.
             </p>
             <div className="flex space-x-3">
               {socialLinks.map((social, index) => {
@@ -99,7 +152,7 @@ const Footer: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Quick Links */}
+          {/* Platform Links */}
           <motion.div 
             className="space-y-6"
             initial={{ opacity: 0, y: 20 }}
@@ -107,9 +160,9 @@ const Footer: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-lg font-semibold text-white">Quick Links</h3>
+            <h3 className="text-lg font-semibold text-white">Platform</h3>
             <ul className="space-y-3">
-              {footerLinks.quickLinks.map((link, index) => (
+              {footerLinks.platform.map((link, index) => (
                 <motion.li 
                   key={index}
                   whileHover={{ x: 5 }}
@@ -127,7 +180,7 @@ const Footer: React.FC = () => {
             </ul>
           </motion.div>
 
-          {/* Categories */}
+          {/* Academic Years */}
           <motion.div 
             className="space-y-6"
             initial={{ opacity: 0, y: 20 }}
@@ -135,9 +188,9 @@ const Footer: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-lg font-semibold text-white">Categories</h3>
+            <h3 className="text-lg font-semibold text-white">Academic Years</h3>
             <ul className="space-y-3">
-              {footerLinks.categories.map((link, index) => (
+              {footerLinks.years.map((link, index) => (
                 <motion.li 
                   key={index}
                   whileHover={{ x: 5 }}
@@ -155,7 +208,7 @@ const Footer: React.FC = () => {
             </ul>
           </motion.div>
 
-          {/* Contact Info */}
+          {/* Contact & Support */}
           <motion.div 
             className="space-y-6"
             initial={{ opacity: 0, y: 20 }}
@@ -163,7 +216,7 @@ const Footer: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <h3 className="text-lg font-semibold text-white">Contact Info</h3>
+            <h3 className="text-lg font-semibold text-white">Contact & Support</h3>
             <div className="space-y-4">
               {contactInfo.map((contact, index) => {
                 const Icon = contact.icon;
@@ -201,6 +254,20 @@ const Footer: React.FC = () => {
                 </motion.button>
               </div>
             </div>
+
+            {/* Support Links */}
+            <ul className="space-y-2 pt-4 border-t border-gray-800">
+              {footerLinks.support.map((link, index) => (
+                <li key={index}>
+                  <Link
+                    to={link.href}
+                    className="text-gray-400 hover:text-white text-xs transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </motion.div>
         </div>
 
@@ -215,21 +282,17 @@ const Footer: React.FC = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-center md:text-left">
               <p className="text-gray-400 text-sm flex items-center justify-center md:justify-start">
-                © {currentYear} Teachers Arena. Made with 
+                © {currentYear} Medfly. Made with 
                 <Heart size={14} className="mx-1 text-red-500" fill="currentColor" />
-                for educators worldwide.
+                for African medical students.
+              </p>
+              <p className="text-gray-500 text-xs mt-1">
+                Empowering the next generation of African healthcare professionals.
               </p>
             </div>
-            <div className="flex items-center space-x-6">
-              {footerLinks.legal.map((link, index) => (
-                <Link
-                  key={index}
-                  to={link.href}
-                  className="text-gray-400 hover:text-white text-sm transition-colors"
-                >
-                  {link.name}
-                </Link>
-              ))}
+            <div className="flex items-center space-x-4">
+              <span className="text-gray-500 text-xs">🇰🇪 Made in Kenya</span>
+              <span className="text-gray-500 text-xs">🌍 For Africa</span>
             </div>
           </div>
         </motion.div>

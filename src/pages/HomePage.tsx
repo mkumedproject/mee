@@ -1,63 +1,111 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useMedfly } from '../context/MedflyContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import PostCard from '../components/PostCard';
-import { useBlog } from '../context/BlogContext';
+import SearchBar from '../components/SearchBar';
 import { 
-  TrendingUp, 
   BookOpen, 
   Users, 
   Award, 
-  ArrowRight, 
+  TrendingUp,
+  Stethoscope,
+  GraduationCap,
+  Heart,
+  Brain,
+  Activity,
   Star,
-  Zap,
-  Globe,
-  Target
+  Clock,
+  Eye,
+  ChevronRight,
+  Microscope,
+  Pill,
+  UserCheck
 } from 'lucide-react';
 
 const HomePage: React.FC = () => {
-  const { state } = useBlog();
-  const { posts, categories } = state;
+  const { state } = useMedfly();
+  const { years, notes, units, lecturers, loading } = state;
+  const [featuredNotes, setFeaturedNotes] = useState<any[]>([]);
 
-  // Get featured post (latest published post)
-  const featuredPost = posts.filter(post => post.published)[0];
-  const recentPosts = posts.filter(post => post.published && post.id !== featuredPost?.id).slice(0, 6);
+  useEffect(() => {
+    // Get featured notes (published and featured)
+    const featured = notes
+      .filter(note => note.is_published && note.is_featured)
+      .slice(0, 6);
+    setFeaturedNotes(featured);
+  }, [notes]);
 
   const stats = [
-    { icon: BookOpen, label: 'Articles Published', value: '1,200+', color: 'blue' },
-    { icon: Users, label: 'Teachers Served', value: '50,000+', color: 'green' },
-    { icon: TrendingUp, label: 'Monthly Readers', value: '100K+', color: 'purple' },
-    { icon: Award, label: 'Years of Service', value: '5+', color: 'orange' },
+    { 
+      icon: BookOpen, 
+      label: 'Study Notes', 
+      value: notes.filter(n => n.is_published).length.toString(), 
+      color: 'medical-blue',
+      description: 'Comprehensive medical notes'
+    },
+    { 
+      icon: GraduationCap, 
+      label: 'Academic Years', 
+      value: years.length.toString(), 
+      color: 'medical-green',
+      description: '6-year medical program'
+    },
+    { 
+      icon: Microscope, 
+      label: 'Medical Units', 
+      value: units.length.toString(), 
+      color: 'medical-purple',
+      description: 'Specialized subjects'
+    },
+    { 
+      icon: UserCheck, 
+      label: 'Expert Lecturers', 
+      value: lecturers.length.toString(), 
+      color: 'medical-orange',
+      description: 'Qualified medical educators'
+    },
   ];
 
   const features = [
     {
-      icon: Zap,
-      title: 'Latest Updates',
-      description: 'Stay informed with real-time education news and policy changes',
-      color: 'yellow'
+      icon: Stethoscope,
+      title: 'Clinical Excellence',
+      description: 'Access comprehensive clinical notes from experienced medical professionals',
+      color: 'medical-blue'
     },
     {
-      icon: Target,
-      title: 'Expert Resources',
-      description: 'Access curated teaching materials and professional development content',
-      color: 'red'
+      icon: Brain,
+      title: 'Structured Learning',
+      description: 'Organized by academic years and subjects for systematic medical education',
+      color: 'medical-green'
     },
     {
-      icon: Globe,
-      title: 'Community Driven',
-      description: 'Connect with educators worldwide and share experiences',
-      color: 'indigo'
+      icon: Heart,
+      title: 'African Focus',
+      description: 'Tailored for medical education across Africa with local context and cases',
+      color: 'medical-red'
     },
     {
-      icon: Star,
-      title: 'Quality Content',
-      description: 'Verified information from trusted education professionals',
-      color: 'pink'
+      icon: Activity,
+      title: 'Real-time Updates',
+      description: 'Stay current with the latest medical knowledge and educational resources',
+      color: 'medical-purple'
     }
   ];
+
+  const getYearColor = (yearNumber: number) => {
+    const colors = [
+      'medical-red',
+      'medical-orange', 
+      'medical-yellow',
+      'medical-green',
+      'medical-blue',
+      'medical-purple'
+    ];
+    return colors[yearNumber - 1] || 'medical-blue';
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -80,6 +128,17 @@ const HomePage: React.FC = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading Medfly...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -100,46 +159,76 @@ const HomePage: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
+            {/* Logo and Brand */}
+            <motion.div 
+              className="flex items-center justify-center mb-8"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <div className="relative">
+                <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
+                  <Stethoscope className="w-10 h-10 text-blue-600" />
+                </div>
+                <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-400 rounded-full animate-pulse"></div>
+              </div>
+            </motion.div>
+
             <motion.h1 
               className="text-4xl md:text-6xl lg:text-7xl font-bold font-display mb-6 text-balance"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
             >
               Welcome to{' '}
-              <span className="text-gradient bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                Teachers Arena
+              <span className="text-gradient bg-gradient-to-r from-green-400 to-blue-300 bg-clip-text text-transparent">
+                Medfly
               </span>
             </motion.h1>
+
             <motion.p 
               className="text-xl md:text-2xl mb-8 text-blue-100 max-w-4xl mx-auto leading-relaxed"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
             >
-              Your trusted source for education news, teacher resources, and professional development insights. 
-              Empowering educators across Kenya and beyond.
+              Your comprehensive medical notes platform designed for African medical students. 
+              Access organized study materials, expert insights, and collaborative learning resources.
             </motion.p>
+
+            {/* Search Bar */}
+            <motion.div 
+              className="max-w-2xl mx-auto mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
+            >
+              <SearchBar placeholder="Search medical notes, units, or topics..." />
+            </motion.div>
+
             <motion.div 
               className="flex flex-col sm:flex-row gap-4 justify-center"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
+              transition={{ duration: 0.8, delay: 1.0 }}
             >
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
-                  to="/blog"
-                  className="inline-flex items-center px-8 py-4 bg-yellow-400 text-blue-900 rounded-xl font-semibold hover:bg-yellow-300 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  to="/search"
+                  className="inline-flex items-center px-8 py-4 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-400 transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   <BookOpen size={20} className="mr-2" />
-                  Explore Articles
+                  Explore Notes
                 </Link>
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <button className="inline-flex items-center px-8 py-4 border-2 border-white text-white rounded-xl font-semibold hover:bg-white hover:text-blue-900 transition-all duration-300">
+                <Link
+                  to="/admin/login"
+                  className="inline-flex items-center px-8 py-4 border-2 border-white text-white rounded-xl font-semibold hover:bg-white hover:text-blue-900 transition-all duration-300"
+                >
                   <Users size={20} className="mr-2" />
-                  Join Community
-                </button>
+                  Admin Access
+                </Link>
               </motion.div>
             </motion.div>
           </motion.div>
@@ -169,13 +258,198 @@ const HomePage: React.FC = () => {
                     <Icon size={32} />
                   </div>
                   <h3 className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</h3>
-                  <p className="text-gray-600 font-medium">{stat.label}</p>
+                  <p className="text-gray-600 font-medium mb-1">{stat.label}</p>
+                  <p className="text-sm text-gray-500">{stat.description}</p>
                 </motion.div>
               );
             })}
           </motion.div>
         </div>
       </section>
+
+      {/* Academic Years Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 mb-4">
+              Medical Program Structure
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Navigate through the 6-year medical program with organized notes and resources for each academic year
+            </p>
+          </motion.div>
+          
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {years.map((year, index) => {
+              const yearColor = getYearColor(year.year_number);
+              const yearUnits = units.filter(unit => unit.year_id === year.id);
+              const yearNotes = notes.filter(note => note.year_id === year.id && note.is_published);
+              
+              return (
+                <motion.div
+                  key={year.id}
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden group card-hover"
+                  variants={itemVariants}
+                  whileHover={{ y: -8 }}
+                >
+                  <div className={`year-${year.year_number}-bg h-32 relative overflow-hidden`}>
+                    <div className="absolute inset-0 bg-black/10"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <h3 className="text-2xl font-bold mb-1">Year {year.year_number}</h3>
+                        <p className="text-sm opacity-90">{yearUnits.length} Units</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6">
+                    <h4 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                      {year.year_name}
+                    </h4>
+                    <p className="text-gray-600 mb-4 line-clamp-3">
+                      {year.description}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                      <span className="flex items-center">
+                        <BookOpen size={14} className="mr-1" />
+                        {yearNotes.length} Notes
+                      </span>
+                      <span className="flex items-center">
+                        <Microscope size={14} className="mr-1" />
+                        {yearUnits.length} Units
+                      </span>
+                    </div>
+                    
+                    <Link
+                      to={`/year/${year.year_number}`}
+                      className={`inline-flex items-center justify-between w-full px-4 py-3 bg-${yearColor}-50 text-${yearColor}-700 rounded-lg hover:bg-${yearColor}-100 transition-colors group`}
+                    >
+                      <span className="font-medium">Explore Year {year.year_number}</span>
+                      <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Featured Notes Section */}
+      {featuredNotes.length > 0 && (
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center mb-12">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+              >
+                <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 mb-4">Featured Notes</h2>
+                <p className="text-xl text-gray-600">Essential study materials recommended by our medical experts</p>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                whileHover={{ x: 5 }}
+              >
+                <Link 
+                  to="/search" 
+                  className="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold text-lg group"
+                >
+                  View All Notes
+                  <ChevronRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </motion.div>
+            </div>
+            
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              {featuredNotes.map((note, index) => (
+                <motion.article
+                  key={note.id}
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden group card-hover"
+                  variants={itemVariants}
+                >
+                  <div className="relative h-48 overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
+                    <div className="absolute inset-0 bg-black/20"></div>
+                    <div className="absolute top-4 left-4">
+                      <span className={`badge badge-${note.difficulty_level?.toLowerCase() || 'intermediate'}`}>
+                        {note.difficulty_level || 'Intermediate'}
+                      </span>
+                    </div>
+                    <div className="absolute top-4 right-4">
+                      <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                    </div>
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <p className="text-sm opacity-90">{note.unit?.unit_name}</p>
+                      <p className="text-xs opacity-75">Year {note.year?.year_number}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                      <Link to={`/note/${note.slug}`}>{note.title}</Link>
+                    </h3>
+                    
+                    <p className="text-gray-600 mb-4 line-clamp-3">
+                      {note.excerpt}
+                    </p>
+                    
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                      <span className="flex items-center">
+                        <Clock size={14} className="mr-1" />
+                        {note.estimated_read_time} min read
+                      </span>
+                      <span className="flex items-center">
+                        <Eye size={14} className="mr-1" />
+                        {note.view_count} views
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <UserCheck size={14} className="text-blue-600" />
+                        </div>
+                        <span className="text-sm text-gray-600">{note.lecturer?.name}</span>
+                      </div>
+                      <Link
+                        to={`/note/${note.slug}`}
+                        className="text-blue-600 hover:text-blue-800 font-medium text-sm group"
+                      >
+                        Read More
+                        <ChevronRight size={14} className="inline ml-1 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </div>
+                  </div>
+                </motion.article>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="py-16 bg-gray-50">
@@ -188,10 +462,10 @@ const HomePage: React.FC = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 mb-4">
-              Why Choose Teachers Arena?
+              Why Choose Medfly?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We provide comprehensive resources and timely information to support your educational journey
+              Designed specifically for African medical education with comprehensive resources and expert guidance
             </p>
           </motion.div>
           
@@ -219,119 +493,6 @@ const HomePage: React.FC = () => {
                 </motion.div>
               );
             })}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Featured Article */}
-      {featuredPost && (
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div 
-              className="text-center mb-12"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 mb-4">Featured Article</h2>
-              <p className="text-xl text-gray-600">Don't miss our top story of the day</p>
-            </motion.div>
-            <div className="max-w-5xl mx-auto">
-              <PostCard post={featuredPost} featured={true} />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Recent Posts */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center mb-12">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 mb-4">Recent Articles</h2>
-              <p className="text-xl text-gray-600">Stay updated with the latest education news</p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              whileHover={{ x: 5 }}
-            >
-              <Link 
-                to="/blog" 
-                className="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold text-lg group"
-              >
-                View All Articles
-                <ArrowRight size={20} className="ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </motion.div>
-          </div>
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {recentPosts.map((post, index) => (
-              <PostCard key={post.id} post={post} index={index} />
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Categories Section */}
-      <section className="py-16 bg-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 mb-4">Browse by Category</h2>
-            <p className="text-xl text-gray-600">Find articles that match your interests</p>
-          </motion.div>
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            {categories.map((category, index) => (
-              <motion.div
-                key={category.id}
-                className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 group cursor-pointer"
-                variants={itemVariants}
-                whileHover={{ y: -5, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className="flex items-center space-x-4 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                    <BookOpen size={24} className="text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                      {category.name}
-                    </h3>
-                  </div>
-                </div>
-                <p className="text-gray-600 mb-4 leading-relaxed">{category.description}</p>
-                <div className="flex items-center text-blue-600 hover:text-blue-800 font-medium group">
-                  <span>Explore Articles</span>
-                  <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </motion.div>
-            ))}
           </motion.div>
         </div>
       </section>

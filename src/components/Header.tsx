@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, X, Facebook, Twitter, Youtube, Mail, Phone, User, LogIn } from 'lucide-react';
+import { Search, Menu, X, Stethoscope, User, LogIn, BookOpen, GraduationCap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useBlog } from '../context/BlogContext';
+import { useMedfly } from '../context/MedflyContext';
+import SearchBar from './SearchBar';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-  const { state } = useBlog();
+  const { state } = useMedfly();
 
   const navigation = [
     { name: 'Home', href: '/' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Categories', href: '/blog?category=all' },
-    { name: 'Admin', href: '/admin' },
+    { name: 'Browse Notes', href: '/search' },
+    { name: 'Years', href: '/search?view=years' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
   ];
@@ -34,13 +33,6 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      window.location.href = `/blog?search=${encodeURIComponent(searchTerm)}`;
-    }
-  };
-
   return (
     <motion.header 
       className={`sticky top-0 z-50 transition-all duration-300 ${
@@ -56,39 +48,17 @@ const Header: React.FC = () => {
           <div className="flex justify-between items-center text-sm">
             <div className="hidden md:flex items-center space-x-6">
               <div className="flex items-center space-x-2">
-                <Mail size={14} />
-                <span>contact@teachersarena.com</span>
+                <GraduationCap size={14} />
+                <span>Medical Education Platform</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Phone size={14} />
-                <span>+254 712 345 678</span>
+                <BookOpen size={14} />
+                <span>African Medical Students</span>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <motion.a
-                href="#"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-1 hover:bg-white/20 rounded-full transition-colors"
-              >
-                <Facebook size={16} />
-              </motion.a>
-              <motion.a
-                href="#"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-1 hover:bg-white/20 rounded-full transition-colors"
-              >
-                <Twitter size={16} />
-              </motion.a>
-              <motion.a
-                href="#"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-1 hover:bg-white/20 rounded-full transition-colors"
-              >
-                <Youtube size={16} />
-              </motion.a>
+              <span className="text-xs">🇰🇪 Kenya</span>
+              <span className="text-xs">🌍 Africa</span>
             </div>
           </div>
         </div>
@@ -105,13 +75,13 @@ const Header: React.FC = () => {
             <Link to="/" className="flex items-center space-x-3">
               <div className="relative">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-xl">TA</span>
+                  <Stethoscope className="w-6 h-6 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-pulse"></div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
               </div>
               <div>
-                <h1 className="text-2xl font-bold font-display text-gray-900">Teachers Arena</h1>
-                <p className="text-sm text-gray-600 font-medium">Your Education Hub</p>
+                <h1 className="text-2xl font-bold font-display text-gray-900">Medfly</h1>
+                <p className="text-sm text-gray-600 font-medium">Medical Notes Hub</p>
               </div>
             </Link>
           </motion.div>
@@ -151,7 +121,7 @@ const Header: React.FC = () => {
               <Search size={20} />
             </motion.button>
 
-            {/* Login Button */}
+            {/* Admin Button */}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/admin/login"
@@ -183,25 +153,12 @@ const Header: React.FC = () => {
               exit={{ opacity: 0, height: 0 }}
               className="pb-4 overflow-hidden"
             >
-              <form onSubmit={handleSearch} className="relative max-w-md mx-auto">
-                <input
-                  type="text"
-                  placeholder="Search articles, categories..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-3 pl-12 pr-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
-                  autoFocus
+              <div className="max-w-2xl mx-auto">
+                <SearchBar 
+                  placeholder="Search medical notes, units, lecturers..."
+                  onSearch={() => setIsSearchOpen(false)}
                 />
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                <motion.button
-                  type="submit"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Search
-                </motion.button>
-              </form>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

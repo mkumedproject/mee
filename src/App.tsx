@@ -1,35 +1,41 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { BlogProvider } from './context/BlogContext';
+import { MedflyProvider } from './context/MedflyContext';
 import HomePage from './pages/HomePage';
-import BlogPage from './pages/BlogPage';
-import PostPage from './pages/PostPage';
-import AdminDashboard from './pages/AdminDashboard';
+import YearPage from './pages/YearPage';
+import UnitPage from './pages/UnitPage';
+import NotePage from './pages/NotePage';
+import SearchPage from './pages/SearchPage';
 import AdminLogin from './pages/AdminLogin';
 import AdminLayout from './components/admin/AdminLayout';
-import PostManager from './pages/admin/PostManager';
-import CategoryManager from './pages/admin/CategoryManager';
+import AdminDashboard from './pages/AdminDashboard';
+import NotesManager from './pages/admin/NotesManager';
+import UnitsManager from './pages/admin/UnitsManager';
+import LecturersManager from './pages/admin/LecturersManager';
 import './App.css';
 
 function App() {
   return (
-    <BlogProvider>
+    <MedflyProvider>
       <Router>
         <div className="App">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/blog" element={<BlogPage />} />
-            <Route path="/post/:slug" element={<PostPage />} />
+            <Route path="/year/:yearNumber" element={<YearPage />} />
+            <Route path="/unit/:unitId" element={<UnitPage />} />
+            <Route path="/note/:slug" element={<NotePage />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
-              <Route path="posts" element={<PostManager />} />
-              <Route path="categories" element={<CategoryManager />} />
+              <Route path="notes" element={<NotesManager />} />
+              <Route path="units" element={<UnitsManager />} />
+              <Route path="lecturers" element={<LecturersManager />} />
             </Route>
           </Routes>
         </div>
       </Router>
-    </BlogProvider>
+    </MedflyProvider>
   );
 }
 
