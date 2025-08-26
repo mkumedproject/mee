@@ -1,61 +1,71 @@
-"use client"
-
 import React, { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { createClient } from "@/lib/supabase/client"
+import { supabase } from '../../lib/supabase'
 
 export default function PostManager() {
-  const [posts, setPosts] = useState<any[]>([])
+  const [notes, setNotes] = useState<any[]>([])
   const [title, setTitle] = useState("")
-  const supabase = createClient()
 
-  // Fetch posts
+  // Fetch notes
   useEffect(() => {
-    const fetchPosts = async () => {
-      const { data, error } = await supabase.from("posts").select("*")
-      if (!error && data) setPosts(data)
+    const fetchNotes = async () => {
+      const { data, error } = await supabase.from("notes").select("*")
+      if (!error && data) setNotes(data)
     }
-    fetchPosts()
-  }, [supabase])
+    fetchNotes()
+  }, [])
 
-  // Add a new post
-  const addPost = async () => {
+  // Add a new note
+  const addNote = async () => {
     if (!title.trim()) return
-    const { data, error } = await supabase.from("posts").insert([{ title }]).select()
+    
+    // Generate a slug from the title
+    const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '')
+    
+    const { data, error } = await supabase.from("notes").insert([{ 
+      title,
+      slug,
+      content: "New note content",
+      excerpt: title.substring(0, 100)
+    }]).select()
+    
     if (!error && data) {
-      setPosts([...posts, ...data])
+      setNotes([...notes, ...data])
       setTitle("")
     }
   }
 
   return (
     <div className="p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Manage Posts</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-white rounded-xl shadow-sm border">
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-xl font-bold text-gray-900">Manage Notes</h2>
+        </div>
+        <div className="p-6">
           <div className="flex space-x-2 mb-4">
-            <Input
+            <input
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter post title"
+              placeholder="Enter note title"
             />
-            <Button onClick={addPost}>Add</Button>
+            <button 
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              onClick={addNote}
+            >
+              Add
+            </button>
           </div>
-          {posts.length === 0 ? (
-            <p>No posts yet.</p>
+          {notes.length === 0 ? (
+            <p className="text-gray-500">No notes yet.</p>
           ) : (
-            <ul className="list-disc pl-6">
-              {posts.map((post) => (
-                <li key={post.id}>{post.title}</li>
+            <ul className="list-disc pl-6 space-y-1">
+              {notes.map((note) => (
+                <li key={note.id} className="text-gray-700">{note.title}</li>
               ))}
             </ul>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }
