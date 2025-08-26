@@ -36,10 +36,7 @@ const NotePage: React.FC = () => {
       const note = notes.find(n => n.slug === slug && n.is_published);
       if (note) {
         setCurrentNote(note);
-        // Increment view count
         incrementNoteView(note.id);
-        
-        // Find related notes
         const related = notes
           .filter(n => 
             n.id !== note.id && 
@@ -72,7 +69,6 @@ const NotePage: React.FC = () => {
         console.log('Error sharing:', error);
       }
     } else {
-      // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
       alert('Link copied to clipboard!');
     }
@@ -80,7 +76,6 @@ const NotePage: React.FC = () => {
 
   const toggleBookmark = () => {
     setIsBookmarked(!isBookmarked);
-    // Here you would typically save to database
   };
 
   if (loading) {
@@ -142,7 +137,7 @@ const NotePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       {/* Breadcrumb */}
       <section className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
