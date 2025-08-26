@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import { Lock, User, Eye, EyeOff, Stethoscope } from 'lucide-react';
+import { Lock, Stethoscope, Eye, EyeOff } from 'lucide-react';
 
 const AdminLogin: React.FC = () => {
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -16,21 +14,15 @@ const AdminLogin: React.FC = () => {
     setLoading(true);
     setError('');
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(error.message);
-      } else {
-        navigate('/admin');
-      }
-    } catch (error) {
-      setError('An unexpected error occurred');
+    // Simple password check
+    if (password === 'Davis') {
+      // Store admin session in localStorage
+      localStorage.setItem('medfly_admin', 'true');
+      navigate('/admin');
+    } else {
+      setError('Incorrect password. Please try again.');
     }
-
+    
     setLoading(false);
   };
 
@@ -39,43 +31,35 @@ const AdminLogin: React.FC = () => {
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-            <Stethoscope size={32} className="text-blue-600" />
+          <div className="mx-auto w-20 h-20 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-2xl">
+            <Stethoscope size={40} className="text-blue-600" />
           </div>
-          <h1 className="text-3xl font-bold text-white">Medfly Admin</h1>
-          <p className="text-blue-100 mt-2">Medical Notes Platform</p>
+          <h1 className="text-4xl font-bold text-white mb-2">Medfly Admin</h1>
+          <p className="text-blue-100 text-lg">Medical Notes Platform</p>
+          <div className="mt-4 inline-flex items-center px-4 py-2 bg-white/10 rounded-full text-blue-100 text-sm">
+            <Lock className="w-4 h-4 mr-2" />
+            Secure Admin Access
+          </div>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-xl shadow-2xl p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 backdrop-blur-sm">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Admin Access</h2>
+            <p className="text-gray-600">Enter your password to continue</p>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm flex items-center">
+                <div className="w-4 h-4 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
                 {error}
               </div>
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="admin@medfly.africa"
-                />
-                <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-3">
+                Admin Password
               </label>
               <div className="relative">
                 <input
@@ -84,34 +68,61 @@ const AdminLogin: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-3 pl-12 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your password"
+                  className="w-full px-4 py-4 pl-12 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                  placeholder="Enter admin password"
+                  autoFocus
                 />
-                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading || !password}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                  Verifying...
+                </div>
+              ) : (
+                'Access Admin Dashboard'
+              )}
             </button>
           </form>
 
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 font-medium mb-2">Medical Platform Access:</p>
-            <p className="text-sm text-gray-500">Use your Supabase authentication credentials to access the medical notes administration panel.</p>
+          {/* Info */}
+          <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0">
+                <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                  <Lock className="w-3 h-3 text-white" />
+                </div>
+              </div>
+              <div>
+                <h4 className="text-sm font-semibold text-blue-900 mb-1">Secure Access</h4>
+                <p className="text-xs text-blue-700 leading-relaxed">
+                  This admin panel allows you to manage medical notes, units, lecturers, and platform content. 
+                  Access is restricted to authorized personnel only.
+                </p>
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-8">
+          <p className="text-blue-200 text-sm">
+            © 2024 Medfly Medical Platform. All rights reserved.
+          </p>
         </div>
       </div>
     </div>

@@ -20,32 +20,20 @@ const AdminLayout: React.FC = () => {
   const [user, setUser] = React.useState<any>(null);
   
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+    const checkAuth = () => {
+      const isAdmin = localStorage.getItem('medfly_admin');
+      if (!isAdmin) {
         navigate('/admin/login');
       } else {
-        setUser(session.user);
+        setUser({ email: 'admin@medfly.com', name: 'Admin User' });
       }
     };
     
     checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        navigate('/admin/login');
-      } else {
-        setUser(session.user);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    }
   }, [navigate]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    localStorage.removeItem('medfly_admin');
     navigate('/admin/login');
   };
 

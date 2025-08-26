@@ -278,15 +278,15 @@ const HomePage: React.FC = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-4xl font-bold font-display text-gray-900 mb-4">
-              Medical Program Structure
+              6-Year Medical Program
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Navigate through the 6-year medical program with organized notes and resources for each academic year
+              Comprehensive medical education resources organized by academic years - from foundation to clinical practice
             </p>
           </motion.div>
           
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -300,50 +300,106 @@ const HomePage: React.FC = () => {
               return (
                 <motion.div
                   key={year.id}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden group card-hover"
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden group card-hover transform hover:scale-105 transition-all duration-300"
                   variants={itemVariants}
-                  whileHover={{ y: -8 }}
+                  whileHover={{ y: -12 }}
                 >
-                  <div className={`year-${year.year_number}-bg h-32 relative overflow-hidden`}>
+                  <div className={`year-${year.year_number}-bg h-40 relative overflow-hidden`}>
                     <div className="absolute inset-0 bg-black/10"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center text-white">
-                        <h3 className="text-2xl font-bold mb-1">Year {year.year_number}</h3>
-                        <p className="text-sm opacity-90">{yearUnits.length} Units</p>
+                        <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-3 mx-auto backdrop-blur-sm">
+                          <span className="text-2xl font-bold">{year.year_number}</span>
+                        </div>
+                        <h3 className="text-lg font-bold mb-1">Year {year.year_number}</h3>
+                        <p className="text-xs opacity-90">{yearUnits.length} Units • {yearNotes.length} Notes</p>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="p-6">
-                    <h4 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                  <div className="p-5">
+                    <h4 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
                       {year.year_name}
                     </h4>
-                    <p className="text-gray-600 mb-4 line-clamp-3">
+                    <p className="text-gray-600 mb-4 line-clamp-2 text-sm">
                       {year.description}
                     </p>
                     
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                       <span className="flex items-center">
-                        <BookOpen size={14} className="mr-1" />
+                        <BookOpen size={12} className="mr-1" />
                         {yearNotes.length} Notes
                       </span>
                       <span className="flex items-center">
-                        <Microscope size={14} className="mr-1" />
+                        <Microscope size={12} className="mr-1" />
                         {yearUnits.length} Units
                       </span>
                     </div>
                     
                     <Link
                       to={`/year/${year.year_number}`}
-                      className={`inline-flex items-center justify-between w-full px-4 py-3 bg-${yearColor}-50 text-${yearColor}-700 rounded-lg hover:bg-${yearColor}-100 transition-colors group`}
+                      className={`inline-flex items-center justify-center w-full px-4 py-2.5 bg-${yearColor}-50 text-${yearColor}-700 rounded-lg hover:bg-${yearColor}-100 transition-colors group text-sm font-medium`}
                     >
-                      <span className="font-medium">Explore Year {year.year_number}</span>
-                      <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                      <span>Explore Year {year.year_number}</span>
+                      <ChevronRight size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>
                 </motion.div>
               );
             })}
+          </motion.div>
+          
+          {/* Quick Access */}
+          <motion.div 
+            className="mt-16 text-center"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <div className="bg-white rounded-2xl shadow-lg p-8 max-w-4xl mx-auto">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Quick Access</h3>
+              <p className="text-gray-600 mb-8">Jump directly to what you need</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Link
+                  to="/search?view=recent"
+                  className="flex flex-col items-center p-4 rounded-xl hover:bg-gray-50 transition-colors group"
+                >
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-3 group-hover:bg-blue-200 transition-colors">
+                    <Clock className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">Recent Notes</span>
+                </Link>
+                <Link
+                  to="/search?featured=true"
+                  className="flex flex-col items-center p-4 rounded-xl hover:bg-gray-50 transition-colors group"
+                >
+                  <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mb-3 group-hover:bg-yellow-200 transition-colors">
+                    <Star className="w-6 h-6 text-yellow-600" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">Featured</span>
+                </Link>
+                <Link
+                  to="/search?difficulty=Beginner"
+                  className="flex flex-col items-center p-4 rounded-xl hover:bg-gray-50 transition-colors group"
+                >
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-3 group-hover:bg-green-200 transition-colors">
+                    <BookOpen className="w-6 h-6 text-green-600" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">Beginner</span>
+                </Link>
+                <Link
+                  to="/search"
+                  className="flex flex-col items-center p-4 rounded-xl hover:bg-gray-50 transition-colors group"
+                >
+                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-3 group-hover:bg-purple-200 transition-colors">
+                    <Search className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">Search All</span>
+                </Link>
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
