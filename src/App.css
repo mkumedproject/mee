@@ -564,15 +564,83 @@ body {
 .ql-editor pre,
 .ql-editor code {
   color: var(--gray-800) !important;
+  background-color: white !important;
 }
 
 /* Ensure toolbar buttons are visible */
 .ql-toolbar .ql-formats button {
   color: var(--gray-700) !important;
+  background-color: transparent !important;
 }
 
 .ql-toolbar .ql-formats button:hover {
   color: var(--gray-900) !important;
+  background-color: var(--gray-100) !important;
+}
+
+/* Fix form input visibility */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+textarea,
+select {
+  color: #111827 !important;
+  background-color: white !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  color: #111827 !important;
+  background-color: white !important;
+}
+
+/* Fix placeholder text visibility */
+input::placeholder,
+textarea::placeholder {
+  color: #9CA3AF !important;
+  opacity: 1 !important;
+}
+
+/* Fix select options visibility */
+select option {
+  color: #111827 !important;
+  background-color: white !important;
+}
+
+/* Ensure all text is visible */
+* {
+  color: inherit;
+}
+
+/* Fix any white text issues */
+.text-white {
+  color: white !important;
+}
+
+/* Fix admin section text visibility */
+.admin-section input,
+.admin-section textarea,
+.admin-section select {
+  color: #111827 !important;
+  background-color: white !important;
+}
+
+/* Fix table text visibility */
+table td,
+table th {
+  color: #111827 !important;
+}
+
+/* Fix card text visibility */
+.bg-white {
+  color: #111827 !important;
 }
 /* Search Highlight */
 .search-highlight {

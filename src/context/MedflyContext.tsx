@@ -495,16 +495,29 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Increment note view count
   const incrementNoteView = async (noteId: string) => {
     try {
-      // Insert view record
-      await supabase
+      // Insert view record and update count in one operation
+      const { error: viewError } = await supabase
         .from('note_views')
         .insert({
           note_id: noteId,
           user_agent: navigator.userAgent,
         });
 
-      // Update view count
-      await supabase.rpc('increment_note_view_count', { note_id: noteId });
+      if (viewError) {
+        console.error('Error inserting view record:', viewError);
+      }
+
+      // Update view count directly in notes table
+      const { error: updateError } = await supabase
+        .from('notes')
+        .update({ 
+          view_count: supabase.raw('view_count + 1')
+        })
+        .eq('id', noteId);
+
+      if (updateError) {
+        console.error('Error updating view count:', updateError);
+      }
     } catch (error) {
       console.error('Error incrementing note view:', error);
     }

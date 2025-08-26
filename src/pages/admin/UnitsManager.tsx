@@ -202,6 +202,7 @@ const UnitsManager: React.FC = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="e.g., ANAT101"
                     required
+                    style={{ color: '#111827' }}
                   />
                 </div>
 
@@ -216,6 +217,7 @@ const UnitsManager: React.FC = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="e.g., Human Anatomy"
                     required
+                    style={{ color: '#111827' }}
                   />
                 </div>
 
@@ -228,6 +230,7 @@ const UnitsManager: React.FC = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, year_id: e.target.value }))}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                     required
+                    style={{ color: '#111827' }}
                   >
                     <option value="">Select a year</option>
                     {years.map((year) => (
@@ -246,6 +249,7 @@ const UnitsManager: React.FC = () => {
                     value={formData.lecturer_id}
                     onChange={(e) => setFormData(prev => ({ ...prev, lecturer_id: e.target.value }))}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    style={{ color: '#111827' }}
                   >
                     <option value="">Select a lecturer</option>
                     {lecturers.map((lecturer) => (
@@ -266,6 +270,7 @@ const UnitsManager: React.FC = () => {
                     rows={3}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="Unit description..."
+                    style={{ color: '#111827' }}
                   />
                 </div>
 
@@ -281,6 +286,7 @@ const UnitsManager: React.FC = () => {
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                       min="1"
                       max="10"
+                      style={{ color: '#111827' }}
                     />
                   </div>
 
@@ -292,6 +298,7 @@ const UnitsManager: React.FC = () => {
                       value={formData.semester}
                       onChange={(e) => setFormData(prev => ({ ...prev, semester: e.target.value }))}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                      style={{ color: '#111827' }}
                     >
                       <option value="1">Semester 1</option>
                       <option value="2">Semester 2</option>

@@ -214,6 +214,7 @@ const LecturersManager: React.FC = () => {
                       value={formData.title}
                       onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                      style={{ color: '#111827' }}
                     >
                       <option value="Dr.">Dr.</option>
                       <option value="Prof.">Prof.</option>
@@ -234,6 +235,7 @@ const LecturersManager: React.FC = () => {
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                       placeholder="Full name"
                       required
+                      style={{ color: '#111827' }}
                     />
                   </div>
                 </div>
@@ -249,6 +251,7 @@ const LecturersManager: React.FC = () => {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="e.g., Cardiology, Anatomy"
                     required
+                    style={{ color: '#111827' }}
                   />
                 </div>
 
@@ -262,6 +265,7 @@ const LecturersManager: React.FC = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="email@example.com"
+                    style={{ color: '#111827' }}
                   />
                 </div>
 
@@ -275,6 +279,7 @@ const LecturersManager: React.FC = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="+254 712 345 678"
+                    style={{ color: '#111827' }}
                   />
                 </div>
 
@@ -288,6 +293,7 @@ const LecturersManager: React.FC = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, office_location: e.target.value }))}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="Room 101, Medical Building"
+                    style={{ color: '#111827' }}
                   />
                 </div>
 
@@ -301,6 +307,7 @@ const LecturersManager: React.FC = () => {
                     rows={3}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                     placeholder="Brief biography..."
+                    style={{ color: '#111827' }}
                   />
                 </div>
 

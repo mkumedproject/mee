@@ -66,15 +66,20 @@ const BlogPage: React.FC = () => {
 
   // Handle browser back/forward navigation
   useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-      // Prevent default browser behavior and handle navigation gracefully
-      event.preventDefault();
-      // You can add custom logic here if needed
+    const handlePopState = () => {
+      // Handle browser navigation gracefully
+      const params = new URLSearchParams(window.location.search);
+      const categoryParam = params.get('category');
+      if (categoryParam && categoryParam !== selectedCategory) {
+        setSelectedCategory(categoryParam);
+      } else if (!categoryParam && selectedCategory !== 'all') {
+        setSelectedCategory('all');
+      }
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+  }, [selectedCategory]);
   // Memoized filtered and sorted posts
   const { filteredPosts, totalPosts, categoryStats } = useMemo(() => {
     let filtered = posts.filter(post => post.published);
