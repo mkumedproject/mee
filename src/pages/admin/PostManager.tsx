@@ -351,7 +351,7 @@ const PostManager: React.FC = () => {
                         placeholder="Search posts by title or content..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                       />
                     </div>
                   </div>
@@ -359,7 +359,7 @@ const PostManager: React.FC = () => {
                     <select
                       value={statusFilter}
                       onChange={(e) => setStatusFilter(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                     >
                       <option value="all">All Status</option>
                       <option value="published">Published</option>
@@ -370,7 +370,7 @@ const PostManager: React.FC = () => {
                     <select
                       value={yearFilter}
                       onChange={(e) => setYearFilter(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                     >
                       <option value="all">All Years</option>
                       {years.map((year) => (
@@ -384,7 +384,7 @@ const PostManager: React.FC = () => {
                     <select
                       value={unitFilter}
                       onChange={(e) => setUnitFilter(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                     >
                       <option value="all">All Units</option>
                       {units.map((unit) => (
@@ -603,7 +603,7 @@ const PostManager: React.FC = () => {
                         type="text"
                         value={formData.title}
                         onChange={(e) => handleTitleChange(e.target.value)}
-                        className="w-full px-4 py-3 text-lg font-medium border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 text-lg font-medium border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                         placeholder="Enter an engaging title that captures attention..."
                         required
                         maxLength={100}
@@ -622,7 +622,7 @@ const PostManager: React.FC = () => {
                         type="text"
                         value={formData.slug}
                         onChange={(e) => handleFormDataChange('slug', e.target.value)}
-                        className="w-full px-4 py-2 font-mono text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 font-mono text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                         placeholder="url-friendly-slug"
                       />
                       <p className="text-xs text-gray-500 mt-1">
@@ -639,7 +639,7 @@ const PostManager: React.FC = () => {
                         value={formData.excerpt}
                         onChange={(e) => handleFormDataChange('excerpt', e.target.value)}
                         rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none bg-white text-gray-900 placeholder-gray-500"
                         placeholder="Write a compelling summary that will appear in post previews and search results..."
                         required
                         maxLength={200}
@@ -686,7 +686,7 @@ const PostManager: React.FC = () => {
                           type="url"
                           value={formData.featured_image}
                           onChange={(e) => handleFormDataChange('featured_image', e.target.value)}
-                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                           placeholder="https://example.com/image.jpg"
                         />
                         {formData.featured_image && (
@@ -716,7 +716,7 @@ const PostManager: React.FC = () => {
                         <select
                           value={formData.year_id}
                           onChange={(e) => handleFormDataChange('year_id', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                           required
                         >
                           <option value="">Select a year</option>
@@ -735,7 +735,7 @@ const PostManager: React.FC = () => {
                         <select
                           value={formData.unit_id}
                           onChange={(e) => handleFormDataChange('unit_id', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                           required
                         >
                           <option value="">Select a unit</option>
@@ -756,7 +756,7 @@ const PostManager: React.FC = () => {
                         <select
                           value={formData.lecturer_id}
                           onChange={(e) => handleFormDataChange('lecturer_id', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                         >
                           <option value="">Select a lecturer</option>
                           {lecturers.map((lecturer) => (

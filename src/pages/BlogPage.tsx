@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -55,6 +55,7 @@ const BlogPage: React.FC = () => {
   const { state } = useBlog();
   const { posts, categories } = state;
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   
   // State management
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,6 +64,17 @@ const BlogPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
 
+  // Handle browser back/forward navigation
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      // Prevent default browser behavior and handle navigation gracefully
+      event.preventDefault();
+      // You can add custom logic here if needed
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
   // Memoized filtered and sorted posts
   const { filteredPosts, totalPosts, categoryStats } = useMemo(() => {
     let filtered = posts.filter(post => post.published);

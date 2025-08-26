@@ -8,9 +8,10 @@ interface PostCardProps {
   post: Post;
   featured?: boolean;
   index?: number;
+  viewMode?: 'grid' | 'list';
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0 }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0, viewMode = 'grid' }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -28,7 +29,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0 }
   if (featured) {
     return (
       <motion.article 
-        className="relative bg-white rounded-2xl shadow-xl overflow-hidden group"
+        className="relative bg-white rounded-2xl shadow-xl overflow-hidden group border border-gray-200"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -77,14 +78,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0 }
 
             {/* Render excerpt with full HTML formatting */}
             <div
-              className="prose prose-lg text-gray-600 mb-6 leading-relaxed"
+              className="prose prose-lg text-gray-700 mb-6 leading-relaxed max-w-none"
               dangerouslySetInnerHTML={{ __html: post.excerpt }}
             />
 
             <motion.div whileHover={{ x: 5 }}>
               <Link
                 to={`/post/${post.slug}`}
-                className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-800 font-semibold transition-colors group"
+                className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-800 font-semibold transition-colors group no-underline"
               >
                 <span>Read Full Article</span>
                 <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -98,16 +99,20 @@ const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0 }
 
   return (
     <motion.article 
-      className="bg-white rounded-2xl shadow-lg overflow-hidden group card-hover"
+      className={`bg-white rounded-2xl shadow-lg overflow-hidden group card-hover border border-gray-200 ${
+        viewMode === 'list' ? 'flex' : ''
+      }`}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
     >
-      <div className="relative overflow-hidden">
+      <div className={`relative overflow-hidden ${viewMode === 'list' ? 'w-64 flex-shrink-0' : 'h-48'}`}>
         <motion.img
           src={post.featured_image || 'https://images.pexels.com/photos/5212324/pexels-photo-5212324.jpeg?auto=compress&cs=tinysrgb&w=400'}
           alt={post.title}
-          className="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110"
+          className={`w-full object-cover transition-transform duration-700 group-hover:scale-110 ${
+            viewMode === 'list' ? 'h-full' : 'h-48'
+          }`}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         {post.category && (
@@ -126,7 +131,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0 }
         </div>
       </div>
       
-      <div className="p-6">
+      <div className="p-6 flex-1">
         <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
           <span className="flex items-center space-x-1">
             <Calendar size={12} />
@@ -139,7 +144,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0 }
         </div>
         
         <motion.h3 
-          className="text-xl font-bold font-display text-gray-900 mb-3 leading-tight group-hover:text-blue-600 transition-colors duration-300 line-clamp-2"
+          className={`font-bold font-display text-gray-900 mb-3 leading-tight group-hover:text-blue-600 transition-colors duration-300 line-clamp-2 ${
+            viewMode === 'list' ? 'text-lg' : 'text-xl'
+          }`}
           whileHover={{ x: 2 }}
         >
           <Link to={`/post/${post.slug}`}>{post.title}</Link>
@@ -147,7 +154,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0 }
         
         {/* Render excerpt with HTML support */}
         <div
-          className="prose prose-base text-gray-600 mb-4 leading-relaxed line-clamp-3"
+          className="prose prose-base text-gray-700 mb-4 leading-relaxed line-clamp-3 max-w-none"
           dangerouslySetInnerHTML={{ __html: post.excerpt }}
         />
 
@@ -159,7 +166,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, featured = false, index = 0 }
           <motion.div whileHover={{ x: 3 }}>
             <Link
               to={`/post/${post.slug}`}
-              className="inline-flex items-center space-x-1 text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm group"
+              className="inline-flex items-center space-x-1 text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm group no-underline"
             >
               <span>Read More</span>
               <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
