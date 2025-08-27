@@ -315,18 +315,21 @@ body {
   transition: all 0.2s ease-in-out;
   background-color: white;
   font-family: inherit;
+  color: #111827 !important;
 }
 
 .form-input:focus {
   outline: none;
   border-color: var(--medical-blue-500);
   box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+  color: #111827 !important;
 }
 
 .form-textarea {
   resize: vertical;
   min-height: 120px;
   font-family: inherit;
+  color: #111827 !important;
 }
 
 .form-select {
@@ -335,6 +338,7 @@ body {
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
   padding-right: 2.5rem;
+  color: #111827 !important;
 }
 
 /* Badge Styles */
@@ -433,6 +437,7 @@ body {
 
 .prose p {
   margin-bottom: 1.25rem;
+  color: var(--gray-700);
 }
 
 .prose strong {
@@ -460,6 +465,7 @@ body {
 
 .prose li {
   margin: 0.5rem 0;
+  color: var(--gray-700);
 }
 
 .prose blockquote {
@@ -513,6 +519,7 @@ body {
   border: 1px solid var(--gray-300);
   padding: 0.75rem;
   text-align: left;
+  color: var(--gray-800);
 }
 
 .prose th {
@@ -540,7 +547,7 @@ body {
 .ql-editor {
   min-height: 300px !important;
   padding: 1rem !important;
-  color: var(--gray-800) !important;
+  color: #111827 !important;
   background-color: white !important;
 }
 
@@ -562,9 +569,13 @@ body {
 .ql-editor li,
 .ql-editor blockquote,
 .ql-editor pre,
-.ql-editor code {
-  color: var(--gray-800) !important;
-  background-color: white !important;
+.ql-editor code,
+.ql-editor strong,
+.ql-editor em,
+.ql-editor span,
+.ql-editor div {
+  color: #111827 !important;
+  background-color: transparent !important;
 }
 
 /* Ensure toolbar buttons are visible */
@@ -578,12 +589,13 @@ body {
   background-color: var(--gray-100) !important;
 }
 
-/* Fix form input visibility */
+/* Fix form input visibility - CRITICAL */
 input[type="text"],
 input[type="email"],
 input[type="tel"],
 input[type="url"],
 input[type="number"],
+input[type="password"],
 textarea,
 select {
   color: #111827 !important;
@@ -595,6 +607,7 @@ input[type="email"]:focus,
 input[type="tel"]:focus,
 input[type="url"]:focus,
 input[type="number"]:focus,
+input[type="password"]:focus,
 textarea:focus,
 select:focus {
   color: #111827 !important;
@@ -642,6 +655,11 @@ table th {
 .bg-white {
   color: #111827 !important;
 }
+
+.bg-white * {
+  color: inherit !important;
+}
+
 /* Search Highlight */
 .search-highlight {
   background-color: var(--medical-yellow-200);
@@ -875,4 +893,26 @@ table th {
   padding: 1rem;
   border-radius: var(--radius-md);
   margin: 1rem 0;
+}
+
+/* CRITICAL: Force text visibility in all contexts */
+body, body *, 
+.bg-white, .bg-white *,
+.bg-gray-50, .bg-gray-50 *,
+input, textarea, select,
+.ql-editor, .ql-editor * {
+  color: #111827 !important;
+}
+
+/* Exception for elements that should be white */
+.text-white, .text-white *,
+button.bg-blue-600, button.bg-blue-600 *,
+.bg-blue-600, .bg-blue-600 *,
+.bg-green-500, .bg-green-500 *,
+.bg-red-500, .bg-red-500 *,
+.bg-yellow-500, .bg-yellow-500 *,
+.bg-purple-500, .bg-purple-500 *,
+.bg-indigo-600, .bg-indigo-600 *,
+.bg-gray-900, .bg-gray-900 * {
+  color: white !important;
 }

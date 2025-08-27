@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, X, Stethoscope, User, LogIn, BookOpen, GraduationCap } from 'lucide-react';
+import { Search, Menu, X, Stethoscope, User, LogIn, BookOpen, GraduationCap, Home, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMedfly } from '../context/MedflyContext';
 import SearchBar from './SearchBar';
@@ -9,15 +9,17 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
   const { state } = useMedfly();
 
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Browse Notes', href: '/search' },
-    { name: 'Years', href: '/search?view=years' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Home', href: '/', icon: Home },
+    { name: 'Browse Notes', href: '/search', icon: FileText },
+    { name: 'Years', href: '/search?view=years', icon: GraduationCap },
+    { name: 'About', href: '/about', icon: BookOpen },
+    { name: 'Contact', href: '/contact', icon: User },
   ];
 
   const isActive = (href: string) => {
@@ -25,22 +27,34 @@ const Header: React.FC = () => {
     return location.pathname.startsWith(href);
   };
 
+  // Handle scroll behavior - hide on scroll down, show on scroll up
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+      
+      setIsScrolled(currentScrollY > 20);
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false); // Hide header when scrolling down
+      } else {
+        setIsVisible(true); // Show header when scrolling up
+      }
+      
+      setLastScrollY(currentScrollY);
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   return (
     <motion.header 
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white shadow-md'
       }`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
+      initial={{ y: 0 }}
+      animate={{ y: isVisible ? 0 : -100 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
       {/* Top Bar */}
       <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-2">
@@ -88,25 +102,29 @@ const Header: React.FC = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1">
-            {navigation.map((item, index) => (
-              <motion.div
-                key={item.name}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link
-                  to={item.href}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                    isActive(item.href)
-                      ? 'bg-blue-50 text-blue-700 shadow-sm'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
+            {navigation.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
                 >
-                  {item.name}
-                </Link>
-              </motion.div>
-            ))}
+                  <Link
+                    to={item.href}
+                    className={`flex items-center space-x-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      isActive(item.href)
+                        ? 'bg-blue-50 text-blue-700 shadow-sm'
+                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon size={16} />
+                    <span>{item.name}</span>
+                  </Link>
+                </motion.div>
+              );
+            })}
           </nav>
 
           {/* Search and Mobile Menu */}
@@ -171,29 +189,33 @@ const Header: React.FC = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-t border-gray-200 overflow-hidden"
+            className="lg:hidden bg-white border-t border-gray-200 overflow-hidden shadow-lg"
           >
             <div className="px-4 py-3 space-y-1">
-              {navigation.map((item, index) => (
-                <motion.div
-                  key={item.name}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <Link
-                    to={item.href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`block px-4 py-3 text-base font-medium rounded-lg transition-all duration-200 ${
-                      isActive(item.href)
-                        ? 'bg-blue-50 text-blue-700'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                    }`}
+              {navigation.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <motion.div
+                    key={item.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
                   >
-                    {item.name}
-                  </Link>
-                </motion.div>
-              ))}
+                    <Link
+                      to={item.href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className={`flex items-center space-x-3 px-4 py-3 text-base font-medium rounded-lg transition-all duration-200 ${
+                        isActive(item.href)
+                          ? 'bg-blue-50 text-blue-700'
+                          : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Icon size={18} />
+                      <span>{item.name}</span>
+                    </Link>
+                  </motion.div>
+                );
+              })}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -203,7 +225,7 @@ const Header: React.FC = () => {
                 <Link
                   to="/admin/login"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center space-x-2 px-4 py-3 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+                  className="flex items-center space-x-3 px-4 py-3 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium"
                 >
                   <LogIn size={18} />
                   <span>Admin Login</span>

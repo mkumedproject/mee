@@ -40,6 +40,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       clipboard: {
         matchVisual: false,
         matchers: [
+          // Handle markdown-style headers
           [
             "P",
             (node: any, delta: any) => {
@@ -52,6 +53,90 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
                 return new Delta().insert(text.substring(2), { header: 1 });
               }
               return delta;
+            },
+          ],
+          // Handle bold text
+          [
+            "STRONG",
+            (node: any, delta: any) => {
+              return new Delta().insert(node.textContent, { bold: true });
+            },
+          ],
+          [
+            "B",
+            (node: any, delta: any) => {
+              return new Delta().insert(node.textContent, { bold: true });
+            },
+          ],
+          // Handle italic text
+          [
+            "EM",
+            (node: any, delta: any) => {
+              return new Delta().insert(node.textContent, { italic: true });
+            },
+          ],
+          [
+            "I",
+            (node: any, delta: any) => {
+              return new Delta().insert(node.textContent, { italic: true });
+            },
+          ],
+          // Handle lists
+          [
+            "UL",
+            (node: any, delta: any) => {
+              const items = Array.from(node.children);
+              let newDelta = new Delta();
+              items.forEach((item: any) => {
+                newDelta = newDelta.insert(item.textContent + '\n', { list: 'bullet' });
+              });
+              return newDelta;
+            },
+          ],
+          [
+            "OL",
+            (node: any, delta: any) => {
+              const items = Array.from(node.children);
+              let newDelta = new Delta();
+              items.forEach((item: any) => {
+                newDelta = newDelta.insert(item.textContent + '\n', { list: 'ordered' });
+              });
+              return newDelta;
+            },
+          ],
+          // Handle blockquotes
+          [
+            "BLOCKQUOTE",
+            (node: any, delta: any) => {
+              return new Delta().insert(node.textContent, { blockquote: true });
+            },
+          ],
+          // Handle code blocks
+          [
+            "PRE",
+            (node: any, delta: any) => {
+              return new Delta().insert(node.textContent, { 'code-block': true });
+            },
+          ],
+          // Handle inline code
+          [
+            "CODE",
+            (node: any, delta: any) => {
+              return new Delta().insert(node.textContent, { code: true });
+            },
+          ],
+          // Handle line breaks
+          [
+            "BR",
+            (node: any, delta: any) => {
+              return new Delta().insert('\n');
+            },
+          ],
+          // Handle divs as paragraphs
+          [
+            "DIV",
+            (node: any, delta: any) => {
+              return delta.insert('\n');
             },
           ],
         ],
@@ -78,10 +163,22 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     "align",
     "blockquote",
     "code-block",
+    "code",
     "link",
     "image",
     "video",
   ];
+
+  // Custom paste handler to preserve formatting
+  const handlePaste = (e: any) => {
+    const clipboardData = e.clipboardData || (window as any).clipboardData;
+    const pastedData = clipboardData.getData('text/html') || clipboardData.getData('text/plain');
+    
+    if (pastedData) {
+      // Let Quill handle the paste with our custom matchers
+      return true;
+    }
+  };
 
   return (
     <div className="rich-text-editor">
@@ -92,11 +189,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         modules={modules}
         formats={formats}
         placeholder={placeholder}
+        onPaste={handlePaste}
         style={{
           height: height,
           marginBottom: "42px",
           backgroundColor: "white",
-          color: "black",
+          color: "#111827",
         }}
       />
     </div>
