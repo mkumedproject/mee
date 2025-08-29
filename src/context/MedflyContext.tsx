@@ -432,10 +432,23 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // -------- FIXED incrementNoteView --------
   const incrementNoteView = async (noteId: string) => {
     try {
-      // Direct SQL update to increment view count
+      // First get current view count
+      const { data: currentNote, error: fetchError } = await supabase
+        .from("notes")
+        .select('view_count')
+        .eq("id", noteId)
+        .single();
+
+      if (fetchError) {
+        console.error("Error fetching current view count:", fetchError);
+        return;
+      }
+
+      // Update with incremented count
+      const newViewCount = (currentNote.view_count || 0) + 1;
       const { error } = await supabase
         .from("notes")
-        .update({ view_count: supabase.raw('view_count + 1') })
+        .update({ view_count: newViewCount })
         .eq("id", noteId);
 
       if (error) {
