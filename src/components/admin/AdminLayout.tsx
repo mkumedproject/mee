@@ -22,9 +22,12 @@ const AdminLayout: React.FC = () => {
   useEffect(() => {
     const checkAuth = () => {
       const isAdmin = localStorage.getItem('medfly_admin');
+      console.log('Checking admin auth:', isAdmin);
       if (!isAdmin) {
+        console.log('No admin session found, redirecting to login');
         navigate('/admin/login');
       } else {
+        console.log('Admin session found');
         setUser({ email: 'admin@medfly.com', name: 'Admin User' });
       }
     };
@@ -33,7 +36,10 @@ const AdminLayout: React.FC = () => {
   }, [navigate]);
 
   const handleLogout = async () => {
+    console.log('Logging out admin');
     localStorage.removeItem('medfly_admin');
+    // Also clear any Supabase session
+    await supabase.auth.signOut();
     navigate('/admin/login');
   };
 

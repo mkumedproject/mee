@@ -14,12 +14,33 @@ const AdminLogin: React.FC = () => {
     setLoading(true);
     setError('');
 
+    console.log('Admin login attempt with password:', password);
+
     // Simple password check
     if (password === 'Davis') {
+      console.log('Password correct, setting admin session');
       // Store admin session in localStorage
       localStorage.setItem('medfly_admin', 'true');
+      
+      // Also create a simple Supabase session for consistency
+      try {
+        // Sign in with a dummy email for admin
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: 'admin@medfly.com',
+          password: 'admin123'
+        });
+        
+        if (signInError) {
+          console.log('Admin auth not set up in Supabase, continuing with localStorage only');
+        }
+      } catch (err) {
+        console.log('Supabase auth error (expected):', err);
+      }
+      
+      console.log('Navigating to admin dashboard');
       navigate('/admin');
     } else {
+      console.log('Incorrect password');
       setError('Incorrect password. Please try again.');
     }
     

@@ -251,6 +251,8 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // -------- CRUD Functions --------
   const createNote = async (noteData: any) => {
     try {
+      console.log('Creating note with data:', noteData);
+      
       const { data, error } = await supabase
         .from("notes")
         .insert(noteData)
@@ -262,11 +264,18 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         `)
         .single();
 
+      console.log('Supabase response:', { data, error });
+
       if (error) throw error;
+      
       dispatch({ type: "ADD_NOTE", payload: data });
       toast.success("Note created successfully!");
+      
+      // Refresh all data to ensure consistency
+      await fetchNotes();
     } catch (error) {
       console.error("Error creating note:", error);
+      console.error("Full error details:", error);
       toast.error("Failed to create note");
       throw error;
     }
@@ -274,6 +283,8 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const updateNote = async (id: string, noteData: any) => {
     try {
+      console.log('Updating note:', id, 'with data:', noteData);
+      
       const { data, error } = await supabase
         .from("notes")
         .update(noteData)
@@ -286,11 +297,18 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         `)
         .single();
 
+      console.log('Update response:', { data, error });
+
       if (error) throw error;
+      
       dispatch({ type: "UPDATE_NOTE", payload: data });
       toast.success("Note updated successfully!");
+      
+      // Refresh all data to ensure consistency
+      await fetchNotes();
     } catch (error) {
       console.error("Error updating note:", error);
+      console.error("Full error details:", error);
       toast.error("Failed to update note");
       throw error;
     }
@@ -298,16 +316,25 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const deleteNote = async (id: string) => {
     try {
+      console.log('Deleting note:', id);
+      
       const { error } = await supabase
         .from("notes")
         .delete()
         .eq("id", id);
 
+      console.log('Delete response:', { error });
+
       if (error) throw error;
+      
       dispatch({ type: "DELETE_NOTE", payload: id });
       toast.success("Note deleted successfully!");
+      
+      // Refresh all data to ensure consistency
+      await fetchNotes();
     } catch (error) {
       console.error("Error deleting note:", error);
+      console.error("Full error details:", error);
       toast.error("Failed to delete note");
       throw error;
     }
@@ -315,6 +342,8 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const createUnit = async (unitData: any) => {
     try {
+      console.log('Creating unit with data:', unitData);
+      
       const { data, error } = await supabase
         .from("units")
         .insert(unitData)
@@ -325,11 +354,18 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         `)
         .single();
 
+      console.log('Unit creation response:', { data, error });
+
       if (error) throw error;
+      
       dispatch({ type: "ADD_UNIT", payload: data });
       toast.success("Unit created successfully!");
+      
+      // Refresh all data
+      await fetchUnits();
     } catch (error) {
       console.error("Error creating unit:", error);
+      console.error("Full error details:", error);
       toast.error("Failed to create unit");
       throw error;
     }
@@ -337,6 +373,8 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const updateUnit = async (id: string, unitData: any) => {
     try {
+      console.log('Updating unit:', id, 'with data:', unitData);
+      
       const { data, error } = await supabase
         .from("units")
         .update(unitData)
@@ -348,11 +386,18 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         `)
         .single();
 
+      console.log('Unit update response:', { data, error });
+
       if (error) throw error;
+      
       dispatch({ type: "UPDATE_UNIT", payload: data });
       toast.success("Unit updated successfully!");
+      
+      // Refresh all data
+      await fetchUnits();
     } catch (error) {
       console.error("Error updating unit:", error);
+      console.error("Full error details:", error);
       toast.error("Failed to update unit");
       throw error;
     }
@@ -360,16 +405,25 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const deleteUnit = async (id: string) => {
     try {
+      console.log('Deleting unit:', id);
+      
       const { error } = await supabase
         .from("units")
         .delete()
         .eq("id", id);
 
+      console.log('Unit delete response:', { error });
+
       if (error) throw error;
+      
       dispatch({ type: "DELETE_UNIT", payload: id });
       toast.success("Unit deleted successfully!");
+      
+      // Refresh all data
+      await fetchUnits();
     } catch (error) {
       console.error("Error deleting unit:", error);
+      console.error("Full error details:", error);
       toast.error("Failed to delete unit");
       throw error;
     }
@@ -377,17 +431,26 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const createLecturer = async (lecturerData: any) => {
     try {
+      console.log('Creating lecturer with data:', lecturerData);
+      
       const { data, error } = await supabase
         .from("lecturers")
         .insert(lecturerData)
         .select()
         .single();
 
+      console.log('Lecturer creation response:', { data, error });
+
       if (error) throw error;
+      
       dispatch({ type: "ADD_LECTURER", payload: data });
       toast.success("Lecturer created successfully!");
+      
+      // Refresh all data
+      await fetchLecturers();
     } catch (error) {
       console.error("Error creating lecturer:", error);
+      console.error("Full error details:", error);
       toast.error("Failed to create lecturer");
       throw error;
     }
@@ -395,6 +458,8 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const updateLecturer = async (id: string, lecturerData: any) => {
     try {
+      console.log('Updating lecturer:', id, 'with data:', lecturerData);
+      
       const { data, error } = await supabase
         .from("lecturers")
         .update(lecturerData)
@@ -402,11 +467,18 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         .select()
         .single();
 
+      console.log('Lecturer update response:', { data, error });
+
       if (error) throw error;
+      
       dispatch({ type: "UPDATE_LECTURER", payload: data });
       toast.success("Lecturer updated successfully!");
+      
+      // Refresh all data
+      await fetchLecturers();
     } catch (error) {
       console.error("Error updating lecturer:", error);
+      console.error("Full error details:", error);
       toast.error("Failed to update lecturer");
       throw error;
     }
@@ -414,16 +486,25 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const deleteLecturer = async (id: string) => {
     try {
+      console.log('Deleting lecturer:', id);
+      
       const { error } = await supabase
         .from("lecturers")
         .delete()
         .eq("id", id);
 
+      console.log('Lecturer delete response:', { error });
+
       if (error) throw error;
+      
       dispatch({ type: "DELETE_LECTURER", payload: id });
       toast.success("Lecturer deleted successfully!");
+      
+      // Refresh all data
+      await fetchLecturers();
     } catch (error) {
       console.error("Error deleting lecturer:", error);
+      console.error("Full error details:", error);
       toast.error("Failed to delete lecturer");
       throw error;
     }
@@ -432,27 +513,20 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // -------- FIXED incrementNoteView --------
   const incrementNoteView = async (noteId: string) => {
     try {
-      // First get current view count
-      const { data: currentNote, error: fetchError } = await supabase
-        .from("notes")
-        .select('view_count')
-        .eq("id", noteId)
-        .single();
-
-      if (fetchError) {
-        console.error("Error fetching current view count:", fetchError);
-        return;
-      }
-
-      // Update with incremented count
-      const newViewCount = (currentNote.view_count || 0) + 1;
+      // Use RPC function or direct update
       const { error } = await supabase
         .from("notes")
-        .update({ view_count: newViewCount })
-        .eq("id", noteId);
+        .update({ 
+          view_count: supabase.raw('view_count + 1') 
+        })
+        .eq("id", noteId)
+        .select();
 
       if (error) {
         console.error("Error updating view count:", error);
+      } else {
+        // Refresh notes to show updated count
+        fetchNotes();
       }
     } catch (err) {
       console.error("Error incrementing note view:", err);

@@ -63,6 +63,10 @@ const PostManager: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log('Form submission started');
+    console.log('Form data:', formData);
+    
     if (!formData.title.trim() || !formData.content.trim()) {
       toast.error('Title and content are required');
       return;
@@ -82,18 +86,22 @@ const PostManager: React.FC = () => {
       const noteData = {
         ...formData,
         estimated_read_time: readTime,
+        updated_at: new Date().toISOString(),
       };
 
+      console.log('Submitting note data:', noteData);
+
       if (editingNote) {
+        console.log('Updating existing note:', editingNote.id);
         await updateNote(editingNote.id, noteData);
-        toast.success('Note updated successfully!');
       } else {
+        console.log('Creating new note');
         await createNote(noteData);
-        toast.success('Note created successfully!');
       }
       resetForm();
     } catch (error) {
       console.error('Error saving note:', error);
+      console.error('Error details:', error);
       toast.error('Error saving note. Please try again.');
     } finally {
       setSubmitting(false);
