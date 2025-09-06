@@ -22,7 +22,8 @@ import {
   Microscope,
   Pill,
   UserCheck,
-  Search // ✅ Added this import
+  Search,
+  FileText   // ✅ Added missing import
 } from 'lucide-react';
 
 const HomePage: React.FC = () => {
@@ -260,7 +261,7 @@ const HomePage: React.FC = () => {
               className="flex flex-col items-center p-4 rounded-xl hover:bg-gray-50 transition-colors group"
             >
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-3 group-hover:bg-purple-200 transition-colors">
-                <Search className="w-6 h-6 text-purple-600" /> {/* ✅ Now works */}
+                <Search className="w-6 h-6 text-purple-600" /> {/* ✅ Works */}
               </div>
               <span className="text-sm font-medium text-gray-900">Search All</span>
             </Link>
