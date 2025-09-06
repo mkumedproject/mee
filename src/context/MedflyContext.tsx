@@ -2,6 +2,9 @@ import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import toast from 'react-hot-toast';
 
+// Add missing import for supabase in AdminLogin
+export { supabase };
+
 // ------------------ Types ------------------
 interface State {
   notes: any[];
@@ -538,20 +541,28 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // -------- FIXED incrementNoteView --------
   const incrementNoteView = async (noteId: string) => {
     try {
-      // Use RPC function or direct update
+      // First get current view count
+      const { data: currentNote } = await supabase
+        .from("notes")
+        .select("view_count")
+        .eq("id", noteId)
+        .single();
+        
+      const currentCount = currentNote?.view_count || 0;
+      
+      // Update with incremented count
       const { error } = await supabase
         .from("notes")
         .update({ 
-          view_count: supabase.raw('view_count + 1') 
+          view_count: currentCount + 1
         })
-        .eq("id", noteId)
-        .select();
+        .eq("id", noteId);
 
       if (error) {
         console.error("Error updating view count:", error);
       } else {
         // Refresh notes to show updated count
-        fetchNotes();
+        await fetchNotes();
       }
     } catch (err) {
       console.error("Error incrementing note view:", err);

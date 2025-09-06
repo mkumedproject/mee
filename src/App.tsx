@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { MedflyProvider } from './context/MedflyContext';
 import { BlogProvider } from './context/BlogContext';
 import HomePage from './pages/HomePage';
@@ -49,6 +50,16 @@ function App() {
               {/* Catch-all for unknown routes */}
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+              }}
+            />
           </div>
         </Router>
       </BlogProvider>

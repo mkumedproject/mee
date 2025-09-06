@@ -223,6 +223,18 @@ const PostManager: React.FC = () => {
     });
   }, [notes, units, years, lecturers, loading]);
 
+  // Ensure we have data before rendering
+  if (loading && notes.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading medical notes platform...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6">

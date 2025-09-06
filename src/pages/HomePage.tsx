@@ -28,20 +28,44 @@ import {
 
 const HomePage: React.FC = () => {
   const { notes, blogs } = useMedfly();
+  
+  // Fix: Use state from context instead of direct properties
+  const { state } = useMedfly();
+  const { notes: contextNotes } = state;
+  
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredNotes, setFilteredNotes] = useState(notes);
+  const [filteredNotes, setFilteredNotes] = useState(contextNotes);
+  
+  // Mock blogs data since it's not in the context
+  const blogs = [
+    {
+      id: '1',
+      title: 'Understanding Medical Terminology',
+      excerpt: 'A comprehensive guide to medical terminology for first-year students.',
+    },
+    {
+      id: '2', 
+      title: 'Study Tips for Medical School',
+      excerpt: 'Effective study strategies for medical students.',
+    },
+    {
+      id: '3',
+      title: 'Clinical Skills Development',
+      excerpt: 'Building essential clinical skills during medical training.',
+    }
+  ];
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
-      setFilteredNotes(notes);
+      setFilteredNotes(contextNotes);
     } else {
       setFilteredNotes(
-        notes.filter(note =>
+        contextNotes.filter(note =>
           note.title.toLowerCase().includes(searchQuery.toLowerCase())
         )
       );
     }
-  }, [searchQuery, notes]);
+  }, [searchQuery, contextNotes]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">

@@ -67,7 +67,8 @@ const SearchPage: React.FC = () => {
 
   // Get display results
   const displayResults = useMemo(() => {
-    const results = searchTerm || selectedYear !== 'all' || selectedUnit !== 'all' || selectedLecturer !== 'all' || difficultyLevel !== 'all' 
+    const hasFilters = searchTerm || selectedYear !== 'all' || selectedUnit !== 'all' || selectedLecturer !== 'all' || difficultyLevel !== 'all';
+    const results = hasFilters
       ? searchResults 
       : notes.filter(note => note.is_published);
 

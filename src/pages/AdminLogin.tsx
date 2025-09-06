@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Stethoscope, Eye, EyeOff } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const AdminLogin: React.FC = () => {
   const [password, setPassword] = useState('');

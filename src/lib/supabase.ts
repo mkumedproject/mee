@@ -4,11 +4,14 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables. Please check your .env file.');
-  console.error('Required variables: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY');
+  console.warn('Missing Supabase environment variables. Using demo mode.');
+  console.warn('Required variables: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(
+  supabaseUrl || 'https://demo.supabase.co', 
+  supabaseAnonKey || 'demo-key', 
+  {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
@@ -18,7 +21,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       eventsPerSecond: 10,
     },
   },
-});
+}
+);
 
 // Database types for Medfly Medical Platform
 export interface Database {

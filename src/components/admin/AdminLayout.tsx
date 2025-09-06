@@ -39,7 +39,11 @@ const AdminLayout: React.FC = () => {
     console.log('Logging out admin');
     localStorage.removeItem('medfly_admin');
     // Also clear any Supabase session
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.log('Error signing out:', error);
+    }
     navigate('/admin/login');
   };
 
