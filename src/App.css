@@ -904,8 +904,40 @@ input, textarea, select,
 .admin-section, .admin-section *,
 form, form *,
 table, table *,
-.prose, .prose * {
+.prose {
   color: #111827 !important;
+}
+
+/* Prose content should inherit colors properly */
+.prose * {
+  color: inherit;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  color: #111827 !important;
+  font-weight: 600;
+}
+
+.prose p, .prose li, .prose td, .prose th {
+  color: #374151 !important;
+}
+
+.prose strong {
+  color: #111827 !important;
+  font-weight: 600;
+}
+
+.prose a {
+  color: #2563eb !important;
+}
+
+.prose blockquote {
+  color: #6b7280 !important;
+}
+
+.prose code {
+  color: #111827 !important;
+  background-color: #f3f4f6 !important;
 }
 
 /* Force input visibility */

@@ -269,7 +269,110 @@ const HomePage: React.FC = () => {
       </motion.div>
 
       {/* Featured Notes Section */}
-      {/* ... unchanged ... */}
+      {featuredNotes.length > 0 && (
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div 
+              className="text-center mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Featured Medical Notes</h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Discover our most popular and comprehensive medical study materials
+              </p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredNotes.map((note, index) => (
+                <motion.article
+                  key={note.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border"
+                >
+                  <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600">
+                    {note.featured_image ? (
+                      <img
+                        src={note.featured_image}
+                        alt={note.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center text-white">
+                          <FileText className="w-12 h-12 mx-auto mb-2 opacity-80" />
+                          <div className="text-sm font-medium opacity-90">
+                            {note.unit?.unit_code}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute top-4 left-4">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <Star className="w-3 h-3 mr-1" />
+                        Featured
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className="flex items-center space-x-2 mb-3">
+                      {note.unit && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <BookOpen className="w-3 h-3 mr-1" />
+                          {note.unit.unit_code}
+                        </span>
+                      )}
+                      {note.year && (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          <GraduationCap className="w-3 h-3 mr-1" />
+                          Year {note.year.year_number}
+                        </span>
+                      )}
+                    </div>
+                    
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
+                      <Link to={`/note/${note.slug}`} className="hover:text-blue-600 transition-colors">
+                        {note.title}
+                      </Link>
+                    </h3>
+                    
+                    <div 
+                      className="text-gray-600 text-sm mb-4 line-clamp-3 prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: note.excerpt }}
+                    />
+                    
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center space-x-3">
+                        <span className="flex items-center">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {note.estimated_read_time}m
+                        </span>
+                        <span className="flex items-center">
+                          <Eye className="w-3 h-3 mr-1" />
+                          {note.view_count || 0}
+                        </span>
+                      </div>
+                      <Link
+                        to={`/note/${note.slug}`}
+                        className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+                      >
+                        Read More
+                        <ChevronRight className="w-3 h-3 ml-1" />
+                      </Link>
+                    </div>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       {/* ... unchanged ... */}

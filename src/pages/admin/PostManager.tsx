@@ -16,7 +16,10 @@ import {
   Grid3X3,
   List,
   BookOpen,
-  GraduationCap
+  GraduationCap,
+  Clock,
+  Star,
+  AlertCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -61,23 +64,42 @@ const PostManager: React.FC = () => {
     }));
   };
 
+  const validateForm = () => {
+    if (!formData.title.trim()) {
+      toast.error('Title is required');
+      return false;
+    }
+    if (!formData.content.trim()) {
+      toast.error('Content is required');
+      return false;
+    }
+    if (!formData.unit_id) {
+      toast.error('Please select a unit');
+      return false;
+    }
+    if (!formData.year_id) {
+      toast.error('Please select a year');
+      return false;
+    }
+    if (!formData.excerpt.trim()) {
+      toast.error('Excerpt is required');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Form submission started');
-    console.log('Form data:', formData);
+    console.log('🚀 Form submission started');
+    console.log('📝 Form data:', formData);
     
-    if (!formData.title.trim() || !formData.content.trim()) {
-      toast.error('Title and content are required');
-      return;
-    }
-
-    if (!formData.unit_id || !formData.year_id) {
-      toast.error('Please select a unit and year');
+    if (!validateForm()) {
       return;
     }
 
     setSubmitting(true);
+    
     try {
       // Calculate estimated read time
       const wordCount = formData.content.replace(/<[^>]*>/g, '').split(' ').length;
@@ -86,23 +108,35 @@ const PostManager: React.FC = () => {
       const noteData = {
         ...formData,
         estimated_read_time: readTime,
+        slug: formData.slug || generateSlug(formData.title),
+        created_at: editingNote ? undefined : new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
 
-      console.log('Submitting note data:', noteData);
+      console.log('💾 Submitting note data:', noteData);
 
       if (editingNote) {
-        console.log('Updating existing note:', editingNote.id);
+        console.log('✏️ Updating existing note:', editingNote.id);
         await updateNote(editingNote.id, noteData);
+        toast.success('Note updated successfully!');
       } else {
-        console.log('Creating new note');
+        console.log('➕ Creating new note');
         await createNote(noteData);
+        toast.success('Note created successfully!');
       }
+      
       resetForm();
-    } catch (error) {
-      console.error('Error saving note:', error);
-      console.error('Error details:', error);
-      toast.error('Error saving note. Please try again.');
+    } catch (error: any) {
+      console.error('❌ Error saving note:', error);
+      console.error('📋 Full error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      
+      const errorMessage = error.message || 'Failed to save note. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -128,20 +162,21 @@ const PostManager: React.FC = () => {
   };
 
   const handleEdit = (note: any) => {
+    console.log('✏️ Editing note:', note);
     setEditingNote(note);
     setFormData({
-      title: note.title,
-      slug: note.slug,
-      excerpt: note.excerpt,
-      content: note.content,
+      title: note.title || '',
+      slug: note.slug || '',
+      excerpt: note.excerpt || '',
+      content: note.content || '',
       unit_id: note.unit_id || '',
       year_id: note.year_id || '',
       lecturer_id: note.lecturer_id || '',
       featured_image: note.featured_image || '',
       difficulty_level: note.difficulty_level || 'Intermediate',
       estimated_read_time: note.estimated_read_time || 5,
-      is_published: note.is_published,
-      is_featured: note.is_featured,
+      is_published: note.is_published || false,
+      is_featured: note.is_featured || false,
     });
     setShowForm(true);
   };
@@ -149,11 +184,12 @@ const PostManager: React.FC = () => {
   const handleDelete = async (noteId: string) => {
     if (confirm('Are you sure you want to delete this note?')) {
       try {
+        console.log('🗑️ Deleting note:', noteId);
         await deleteNote(noteId);
         toast.success('Note deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting note:', error);
-        toast.error('Error deleting note. Please try again.');
+      } catch (error: any) {
+        console.error('❌ Error deleting note:', error);
+        toast.error('Failed to delete note. Please try again.');
       }
     }
   };
@@ -176,6 +212,17 @@ const PostManager: React.FC = () => {
     });
   };
 
+  // Debug info
+  useEffect(() => {
+    console.log('🔄 PostManager state updated:', {
+      notesCount: notes.length,
+      unitsCount: units.length,
+      yearsCount: years.length,
+      lecturersCount: lecturers.length,
+      loading
+    });
+  }, [notes, units, years, lecturers, loading]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-6">
@@ -185,9 +232,17 @@ const PostManager: React.FC = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Medical Notes Management</h1>
               <p className="text-gray-600 mt-1">Create and manage medical study notes</p>
+              <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                <span>Total: {notes.length}</span>
+                <span>Published: {notes.filter(n => n.is_published).length}</span>
+                <span>Drafts: {notes.filter(n => !n.is_published).length}</span>
+              </div>
             </div>
             <button
-              onClick={() => setShowForm(true)}
+              onClick={() => {
+                console.log('➕ Opening new note form');
+                setShowForm(true);
+              }}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 font-medium shadow-sm"
             >
               <Plus size={20} />
@@ -195,6 +250,18 @@ const PostManager: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* Debug Panel */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <h3 className="font-semibold text-yellow-800 mb-2">Debug Info:</h3>
+            <div className="text-sm text-yellow-700 space-y-1">
+              <div>Notes: {notes.length} | Units: {units.length} | Years: {years.length} | Lecturers: {lecturers.length}</div>
+              <div>Loading: {loading ? 'Yes' : 'No'}</div>
+              <div>Form visible: {showForm ? 'Yes' : 'No'}</div>
+            </div>
+          </div>
+        )}
 
         {/* Filters and Search */}
         <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
@@ -207,8 +274,8 @@ const PostManager: React.FC = () => {
                   placeholder="Search notes..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                  style={{ color: '#111827 !important' }}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
+                  style={{ color: '#111827' }}
                 />
               </div>
             </div>
@@ -217,8 +284,8 @@ const PostManager: React.FC = () => {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                style={{ color: '#111827 !important' }}
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                style={{ color: '#111827' }}
               >
                 <option value="all">All Notes ({notes.length})</option>
                 <option value="published">Published ({notes.filter(n => n.is_published).length})</option>
@@ -251,7 +318,12 @@ const PostManager: React.FC = () => {
           {/* Notes List */}
           <div className="xl:col-span-2">
             <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-              {filteredNotes.length === 0 ? (
+              {loading ? (
+                <div className="p-12 text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading notes...</p>
+                </div>
+              ) : filteredNotes.length === 0 ? (
                 <div className="p-12 text-center">
                   <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No notes found</h3>
@@ -291,6 +363,7 @@ const PostManager: React.FC = () => {
                                 <div className="flex items-center mt-2 space-x-4 text-xs text-gray-500">
                                   <span>Slug: {note.slug}</span>
                                   <span>{note.estimated_read_time} min read</span>
+                                  <span>{note.view_count || 0} views</span>
                                 </div>
                               </div>
                             </div>
@@ -325,6 +398,7 @@ const PostManager: React.FC = () => {
                               {note.is_featured && (
                                 <div>
                                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    <Star size={12} className="mr-1" />
                                     Featured
                                   </span>
                                 </div>
@@ -400,7 +474,7 @@ const PostManager: React.FC = () => {
                       type="text"
                       value={formData.title}
                       onChange={(e) => handleTitleChange(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                       placeholder="Enter note title"
                       required
                       style={{ color: '#111827 !important' }}
@@ -415,7 +489,7 @@ const PostManager: React.FC = () => {
                       type="text"
                       value={formData.slug}
                       onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                       placeholder="note-slug"
                       style={{ color: '#111827 !important' }}
                     />
@@ -429,7 +503,7 @@ const PostManager: React.FC = () => {
                       <select
                         value={formData.year_id}
                         onChange={(e) => setFormData(prev => ({ ...prev, year_id: e.target.value }))}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                         required
                         style={{ color: '#111827 !important' }}
                       >
@@ -449,7 +523,7 @@ const PostManager: React.FC = () => {
                       <select
                         value={formData.unit_id}
                         onChange={(e) => setFormData(prev => ({ ...prev, unit_id: e.target.value }))}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                         required
                         style={{ color: '#111827 !important' }}
                       >
@@ -472,7 +546,7 @@ const PostManager: React.FC = () => {
                     <select
                       value={formData.lecturer_id}
                       onChange={(e) => setFormData(prev => ({ ...prev, lecturer_id: e.target.value }))}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                       style={{ color: '#111827 !important' }}
                     >
                       <option value="">Select Lecturer</option>
@@ -491,7 +565,7 @@ const PostManager: React.FC = () => {
                     <select
                       value={formData.difficulty_level}
                       onChange={(e) => setFormData(prev => ({ ...prev, difficulty_level: e.target.value }))}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
                       style={{ color: '#111827 !important' }}
                     >
                       <option value="Beginner">Beginner</option>
@@ -502,14 +576,15 @@ const PostManager: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-semibold text-gray-900 mb-2">
-                      Excerpt
+                      Excerpt *
                     </label>
                     <textarea
                       value={formData.excerpt}
                       onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
                       rows={3}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                       placeholder="Brief description of the note"
+                      required
                       style={{ color: '#111827 !important' }}
                     />
                   </div>
@@ -522,7 +597,7 @@ const PostManager: React.FC = () => {
                       type="url"
                       value={formData.featured_image}
                       onChange={(e) => setFormData(prev => ({ ...prev, featured_image: e.target.value }))}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                       placeholder="https://example.com/image.jpg"
                       style={{ color: '#111827 !important' }}
                     />

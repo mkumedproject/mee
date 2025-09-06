@@ -253,6 +253,19 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     try {
       console.log('Creating note with data:', noteData);
       
+      // Ensure required fields are present
+      if (!noteData.title || !noteData.content || !noteData.unit_id || !noteData.year_id) {
+        throw new Error('Missing required fields: title, content, unit_id, and year_id are required');
+      }
+      
+      // Generate slug if not provided
+      if (!noteData.slug) {
+        noteData.slug = noteData.title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+      }
+      
       const { data, error } = await supabase
         .from("notes")
         .insert(noteData)
@@ -273,6 +286,8 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
       // Refresh all data to ensure consistency
       await fetchNotes();
+      
+      console.log('✅ Note created successfully:', data);
     } catch (error) {
       console.error("Error creating note:", error);
       console.error("Full error details:", error);
@@ -284,6 +299,14 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const updateNote = async (id: string, noteData: any) => {
     try {
       console.log('Updating note:', id, 'with data:', noteData);
+      
+      // Ensure slug is generated if title changed
+      if (noteData.title && !noteData.slug) {
+        noteData.slug = noteData.title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+      }
       
       const { data, error } = await supabase
         .from("notes")
@@ -306,6 +329,8 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
       // Refresh all data to ensure consistency
       await fetchNotes();
+      
+      console.log('✅ Note updated successfully:', data);
     } catch (error) {
       console.error("Error updating note:", error);
       console.error("Full error details:", error);

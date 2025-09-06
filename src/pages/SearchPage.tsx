@@ -388,18 +388,32 @@ const SearchPage: React.FC = () => {
                       }`}
                     >
                       {/* Note Image/Icon */}
-                      <div className={`relative overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 ${
+                      <div className={`relative overflow-hidden ${
+                        note.featured_image 
+                          ? '' 
+                          : 'bg-gradient-to-br from-blue-500 to-purple-600'
+                      } ${
                         viewMode === 'list' ? 'w-48 flex-shrink-0' : 'h-48'
                       }`}>
-                        <div className="absolute inset-0 bg-black/20"></div>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="text-center text-white">
-                            <FileText className="w-12 h-12 mx-auto mb-2 opacity-80" />
-                            <div className="text-xs font-medium opacity-90">
-                              {note.unit?.unit_code}
+                        {note.featured_image ? (
+                          <img
+                            src={note.featured_image}
+                            alt={note.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <>
+                            <div className="absolute inset-0 bg-black/20"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="text-center text-white">
+                                <FileText className="w-12 h-12 mx-auto mb-2 opacity-80" />
+                                <div className="text-xs font-medium opacity-90">
+                                  {note.unit?.unit_code}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
+                          </>
+                        )}
                         
                         {/* Badges */}
                         <div className="absolute top-3 left-3 flex flex-wrap gap-2">
@@ -451,9 +465,10 @@ const SearchPage: React.FC = () => {
                         </h3>
 
                         {/* Excerpt */}
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                          {note.excerpt}
-                        </p>
+                        <div 
+                          className="text-gray-600 text-sm mb-4 line-clamp-3 prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: note.excerpt }}
+                        />
 
                         {/* Footer */}
                         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
