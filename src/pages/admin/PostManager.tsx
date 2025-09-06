@@ -396,6 +396,14 @@ const PostManager: React.FC = () => {
                                   </span>
                                 </div>
                               )}
+                              {note.lecturer && (
+                                <div>
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    <User size={12} className="mr-1" />
+                                    {note.lecturer.name}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           </td>
                           <td className="py-4 px-6">

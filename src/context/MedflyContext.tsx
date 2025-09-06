@@ -238,7 +238,8 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       // Apply text search
       if (query.trim()) {
-        queryBuilder = queryBuilder.or(`title.ilike.%${query}%,content.ilike.%${query}%,excerpt.ilike.%${query}%`);
+        const searchQuery = `%${query.trim()}%`;
+        queryBuilder = queryBuilder.or(`title.ilike.${searchQuery},content.ilike.${searchQuery},excerpt.ilike.${searchQuery}`);
       }
 
       const { data, error } = await queryBuilder.order("created_at", { ascending: false });
@@ -248,6 +249,8 @@ export const MedflyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } catch (error) {
       console.error("Error searching notes:", error);
       dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
+    } finally {
+      dispatch({ type: "SET_SEARCHING", payload: false });
     }
   };
 
